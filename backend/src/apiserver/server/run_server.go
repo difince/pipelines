@@ -262,7 +262,9 @@ func getNamespaceFromListRunsRequest(request *api.ListRunsRequest, filterContext
 	}
 
 	// Deprecated way
-	//api.ListRunsRequest.ResourceReferenceKey is Deprecated
+	// api.ListRunsRequest.ResourceReferenceKey is Deprecated
+	// Namespace is supposed to be provided as endpoint param.
+	// For Experiment - a dedicated endpoint was added `ListRunsByExperiment`
 	refKey := filterContext.ReferenceKey
 	if refKey == nil {
 		return "", util.NewInvalidInputError("ListRuns must filter by namespace in multi-user mode.")
