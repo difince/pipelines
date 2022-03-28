@@ -99,52 +99,14 @@ type RunServer struct {
 	options         *RunServerOptions
 }
 
-//if request.GetRun().GetExperimentId() != "" {
-//	var assigned bool
-//	for _, reference := range request.Run.ResourceReferences {
-//		if reference.Key.Type == api.ResourceType_EXPERIMENT {
-//			reference.Key.Id = request.GetRun().GetExperimentId()
-//			assigned = true
-//			break
-//		}
-//	}
-//	if !assigned {
-//		experimentRef := &api.ResourceReference{
-//			Key: &api.ResourceKey{
-//				Id:   request.GetRun().GetExperimentId(),
-//				Type: api.ResourceType_EXPERIMENT,
-//			},
-//			Relationship: api.Relationship_OWNER,
-//		}
-//		request.GetRun().ResourceReferences = append(request.GetRun().GetResourceReferences(), experimentRef)
-//	}
-//}
-//if request.GetRun().GetPipelineVersionId() != "" {
-//	var assigned bool
-//	for _, reference := range request.Run.ResourceReferences {
-//		if reference.Key.Type == api.ResourceType_PIPELINE_VERSION {
-//			reference.Key.Id = request.GetRun().GetPipelineVersionId()
-//			assigned = true
-//			break
-//		}
-//	}
-//	if !assigned {
-//		pipelineVersionRef := &api.ResourceReference{
-//			Key: &api.ResourceKey{
-//				Id:   request.GetRun().GetPipelineVersionId(),
-//				Type: api.ResourceType_PIPELINE_VERSION,
-//			},
-//			Relationship: api.Relationship_CREATOR,
-//		}
-//		request.GetRun().ResourceReferences = append(request.GetRun().GetResourceReferences(), pipelineVersionRef)
-//	}
-//}
 func (s *RunServer) CreateRun(ctx context.Context, request *api.CreateRunRequest) (*api.RunDetail, error) {
 	if s.options.CollectMetrics {
 		createRunRequests.Inc()
 	}
 
-	//request.Run.ResourceReference - is deprecated. If the user still use it, move its info into the relevant new fields
+	// Request.Run.ResourceReference - is deprecated.
+	// If the user use it, move the data respectively to `request.Run.ExperimentId` and `request.Run.PipelineVersionId`
+	// only these fields are empty
 	if request.Run.ExperimentId == "" {
 		for _, resourceRef := range request.Run.ResourceReferences {
 			if resourceRef.Key.Type == api.ResourceType_EXPERIMENT {

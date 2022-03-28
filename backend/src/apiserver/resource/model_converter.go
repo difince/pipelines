@@ -115,6 +115,7 @@ func (r *ResourceManager) ToModelRunDetail(run *api.Run, runId string, workflow 
 	}
 }
 
+// Temporary Commented
 func (r *ResourceManager) ToModelJob(job *api.Job, swf *util.ScheduledWorkflow, manifest string, templateType template.TemplateType) (*model.Job, error) {
 	//resourceReferences, err := r.ToModelResourceReferences(string(swf.UID), common.Job, job.GetResourceReferences())
 	//if err != nil {

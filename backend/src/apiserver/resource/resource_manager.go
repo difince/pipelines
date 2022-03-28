@@ -994,25 +994,6 @@ func (r *ResourceManager) getWorkflowSpecBytesFromPipelineSpec(spec *api.Pipelin
 	return nil, util.NewInvalidInputError("Please provide a valid pipeline spec")
 }
 
-//func (r *ResourceManager) getManifestBytesFromPipelineVersion(pipelineVersion string) ([]byte, error) {
-//	var pipelineVersionId = ""
-//	//for _, reference := range references {
-//	//	if reference.ReferenceType == common.PipelineVersion {
-//	//		pipelineVersionId = reference.ReferenceUUID
-//	//	}
-//	//}
-//	//if len(pipelineVersionId) == 0 {
-//	//	return nil, util.NewInvalidInputError("No pipeline version.")
-//	//}
-//	manifestBytes, err := r.objectStore.GetFile(r.objectStore.GetPipelineKey(pipelineVersionId))
-//	if err != nil {
-//		return nil, util.Wrap(err, "Get manifest bytes from PipelineVersion failed.")
-//	}
-//
-//	return manifestBytes, nil
-//}
-
-//TODO be careful with *
 func getManifestBytes(pipelineSpec *api.PipelineSpec, pipelineVersion string, r *ResourceManager) ([]byte, error) {
 	var manifestBytes []byte
 	if pipelineSpec.GetWorkflowManifest() != "" {
