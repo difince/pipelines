@@ -63,6 +63,7 @@ type PipelineStoreInterface interface {
 	GetPipelineByNameAndNamespace(pipelineName string, namespace string) (*model.Pipeline, error)
 	GetPipelineWithStatus(id string, status model.PipelineStatus) (*model.Pipeline, error)
 	DeletePipeline(pipelineId string) error
+	DeletePipelineByNameAndNamespace(name string, namespace string) error
 	CreatePipeline(*model.Pipeline) (*model.Pipeline, error)
 	UpdatePipelineStatus(string, model.PipelineStatus) error
 	UpdatePipelineDefaultVersion(string, string) error
@@ -301,6 +302,19 @@ func (s *PipelineStore) DeletePipeline(id string) error {
 	_, err = s.db.Exec(sql, args...)
 	if err != nil {
 		return util.NewInternalServerError(err, "Failed to delete pipeline: %v", err.Error())
+	}
+	return nil
+}
+
+func (s *PipelineStore) DeletePipelineByNameAndNamespace(name string, namespace string) error {
+	sql, args, err := sq.Delete("pipelines").Where(sq.And{sq.Eq{"Name": name}, sq.Eq{"Namespace": namespace}}).ToSql()
+	if err != nil {
+		return util.NewInternalServerError(err, "Failed to create query to delete pipeline by name: %v", err.Error())
+	}
+
+	_, err = s.db.Exec(sql, args...)
+	if err != nil {
+		return util.NewInternalServerError(err, "Failed to delete pipeline by name: %v", err.Error())
 	}
 	return nil
 }

@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **storage_state** | [**ApiRunStorageState**](ApiRunStorageState.md) |  | [optional] 
 **description** | **str** |  | [optional] 
 **pipeline_spec** | [**ApiPipelineSpec**](ApiPipelineSpec.md) |  | [optional] 
-**resource_references** | [**list[ApiResourceReference]**](ApiResourceReference.md) | Optional input field. Specify which resource this run belongs to. When creating a run from a particular pipeline version, the pipeline version can be specified here. | [optional] 
+**resource_references** | [**list[ApiResourceReference]**](ApiResourceReference.md) | Deprecated Optional input field. Specify which resource this run belongs to. When creating a run from a particular pipeline version, the pipeline version can be specified here. | [optional] 
 **service_account** | **str** | Optional input field. Specify which Kubernetes service account this run uses. | [optional] 
 **created_at** | **datetime** | Output. The time that the run created. | [optional] 
 **scheduled_at** | **datetime** | Output. When this run is scheduled to run. This could be different from created_at. For example, if a run is from a backfilling job that was supposed to run 2 month ago, the scheduled_at is 2 month ago, v.s. created_at is the current time. | [optional] 
@@ -16,6 +16,8 @@ Name | Type | Description | Notes
 **status** | **str** |  | [optional] 
 **error** | **str** | In case any error happens retrieving a run field, only run ID and the error message is returned. Client has the flexibility of choosing how to handle error. This is especially useful during listing call. | [optional] 
 **metrics** | [**list[ApiRunMetric]**](ApiRunMetric.md) | Output. The metrics of the run. The metrics are reported by ReportMetrics API. | [optional] 
+**experiment_id** | **str** |  | [optional] 
+**pipeline_version_id** | **str** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

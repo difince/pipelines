@@ -99,9 +99,67 @@ type RunServer struct {
 	options         *RunServerOptions
 }
 
+//if request.GetRun().GetExperimentId() != "" {
+//	var assigned bool
+//	for _, reference := range request.Run.ResourceReferences {
+//		if reference.Key.Type == api.ResourceType_EXPERIMENT {
+//			reference.Key.Id = request.GetRun().GetExperimentId()
+//			assigned = true
+//			break
+//		}
+//	}
+//	if !assigned {
+//		experimentRef := &api.ResourceReference{
+//			Key: &api.ResourceKey{
+//				Id:   request.GetRun().GetExperimentId(),
+//				Type: api.ResourceType_EXPERIMENT,
+//			},
+//			Relationship: api.Relationship_OWNER,
+//		}
+//		request.GetRun().ResourceReferences = append(request.GetRun().GetResourceReferences(), experimentRef)
+//	}
+//}
+//if request.GetRun().GetPipelineVersionId() != "" {
+//	var assigned bool
+//	for _, reference := range request.Run.ResourceReferences {
+//		if reference.Key.Type == api.ResourceType_PIPELINE_VERSION {
+//			reference.Key.Id = request.GetRun().GetPipelineVersionId()
+//			assigned = true
+//			break
+//		}
+//	}
+//	if !assigned {
+//		pipelineVersionRef := &api.ResourceReference{
+//			Key: &api.ResourceKey{
+//				Id:   request.GetRun().GetPipelineVersionId(),
+//				Type: api.ResourceType_PIPELINE_VERSION,
+//			},
+//			Relationship: api.Relationship_CREATOR,
+//		}
+//		request.GetRun().ResourceReferences = append(request.GetRun().GetResourceReferences(), pipelineVersionRef)
+//	}
+//}
 func (s *RunServer) CreateRun(ctx context.Context, request *api.CreateRunRequest) (*api.RunDetail, error) {
 	if s.options.CollectMetrics {
 		createRunRequests.Inc()
+	}
+
+	//request.Run.ResourceReference - is deprecated. If the user still use it, move its info into the relevant new fields
+	if request.Run.ExperimentId == "" {
+		for _, resourceRef := range request.Run.ResourceReferences {
+			if resourceRef.Key.Type == api.ResourceType_EXPERIMENT {
+				request.Run.ExperimentId = resourceRef.Key.Id
+				break
+			}
+		}
+	}
+	if request.Run.PipelineVersionId == "" {
+		for _, resourceRef := range request.Run.ResourceReferences {
+			if resourceRef.Key.Type == api.ResourceType_PIPELINE_VERSION {
+				request.Run.PipelineVersionId = resourceRef.Key.Id
+				break
+			}
+		}
 	}
 
 	err := s.validateCreateRunRequest(request)
@@ -110,16 +168,15 @@ func (s *RunServer) CreateRun(ctx context.Context, request *api.CreateRunRequest
 	}
 
 	if common.IsMultiUserMode() {
-		experimentID := common.GetExperimentIDFromAPIResourceReferences(request.Run.ResourceReferences)
-		if experimentID == "" {
-			return nil, util.NewInvalidInputError("Job has no experiment.")
+		if request.Run.ExperimentId == "" {
+			return nil, util.NewInvalidInputError("Run has no experiment.")
 		}
-		namespace, err := s.resourceManager.GetNamespaceFromExperimentID(experimentID)
+		namespace, err := s.resourceManager.GetNamespaceFromExperimentID(request.Run.ExperimentId)
 		if err != nil {
-			return nil, util.Wrap(err, "Failed to get experiment for job.")
+			return nil, util.Wrap(err, "Failed to get experiment for Run.")
 		}
 		if namespace == "" {
-			return nil, util.NewInvalidInputError("Job's experiment has no namespace.")
+			return nil, util.NewInvalidInputError("Run's experiment has no namespace.")
 		}
 		resourceAttributes := &authorizationv1.ResourceAttributes{
 			Namespace: namespace,
@@ -175,44 +232,23 @@ func (s *RunServer) ListRuns(ctx context.Context, request *api.ListRunsRequest) 
 		return nil, util.Wrap(err, "Validating filter failed.")
 	}
 
+	//If Namespace explicitly provided use it, instead of using the deprecated `resource_reference` field override it
+	if request.Namespace != "" {
+		filterContext.ReferenceKey = &common.ReferenceKey{Type: common.Namespace, ID: request.Namespace}
+	}
+
 	if common.IsMultiUserMode() {
-		refKey := filterContext.ReferenceKey
-		if refKey == nil {
-			return nil, util.NewInvalidInputError("ListRuns must filter by resource reference in multi-user mode.")
+		namespace, err := getNamespaceFromListRunsRequest(request, filterContext, s.resourceManager)
+		if err != nil {
+			return nil, err
 		}
-		if refKey.Type == common.Namespace {
-			namespace := refKey.ID
-			if len(namespace) == 0 {
-				return nil, util.NewInvalidInputError("Invalid resource references for ListRuns. Namespace is empty.")
-			}
-			resourceAttributes := &authorizationv1.ResourceAttributes{
-				Namespace: namespace,
-				Verb:      common.RbacResourceVerbList,
-			}
-			err = s.canAccessRun(ctx, "", resourceAttributes)
-			if err != nil {
-				return nil, util.Wrap(err, "Failed to authorize with namespace resource reference.")
-			}
-		} else if refKey.Type == common.Experiment || refKey.Type == "ExperimentUUID" {
-			// "ExperimentUUID" was introduced for perf optimization. We accept both refKey.Type for backward-compatible reason.
-			experimentID := refKey.ID
-			if len(experimentID) == 0 {
-				return nil, util.NewInvalidInputError("Invalid resource references for run. Experiment ID is empty.")
-			}
-			namespace, err := s.resourceManager.GetNamespaceFromExperimentID(experimentID)
-			if err != nil {
-				return nil, util.Wrap(err, "Run's experiment has no namespace.")
-			}
-			resourceAttributes := &authorizationv1.ResourceAttributes{
-				Namespace: namespace,
-				Verb:      common.RbacResourceVerbList,
-			}
-			err = s.canAccessRun(ctx, "", resourceAttributes)
-			if err != nil {
-				return nil, util.Wrap(err, "Failed to authorize with namespace in experiment resource reference.")
-			}
-		} else {
-			return nil, util.NewInvalidInputError("Invalid resource references for ListRuns. Got %+v", request.ResourceReferenceKey)
+		resourceAttributes := &authorizationv1.ResourceAttributes{
+			Namespace: namespace,
+			Verb:      common.RbacResourceVerbList,
+		}
+		err = s.canAccessRun(ctx, "", resourceAttributes)
+		if err != nil {
+			return nil, util.Wrap(err, "Failed to authorize with namespace in experiment resource reference.")
 		}
 	}
 
@@ -221,6 +257,74 @@ func (s *RunServer) ListRuns(ctx context.Context, request *api.ListRunsRequest) 
 		return nil, util.Wrap(err, "Failed to list runs.")
 	}
 	return &api.ListRunsResponse{Runs: ToApiRuns(runs), TotalSize: int32(total_size), NextPageToken: nextPageToken}, nil
+}
+
+func (s *RunServer) ListRunsByExperiment(ctx context.Context, request *api.ListRunsByExperimentRequest) (*api.ListRunByExperimentResponse, error) {
+	if s.options.CollectMetrics {
+		listRunRequests.Inc()
+	}
+
+	opts, err := validatedListOptions(&model.Run{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
+	if err != nil {
+		return nil, util.Wrap(err, "Failed to create list options")
+	}
+
+	if common.IsMultiUserMode() {
+		namespace, err := s.resourceManager.GetNamespaceFromExperimentID(request.ExperimentId)
+		if err != nil {
+			return nil, util.Wrap(err, "Run's experiment has no namespace.")
+		}
+		resourceAttributes := &authorizationv1.ResourceAttributes{
+			Namespace: namespace,
+			Verb:      common.RbacResourceVerbList,
+		}
+		err = s.canAccessRun(ctx, "", resourceAttributes)
+		if err != nil {
+			return nil, util.Wrap(err, "Failed to authorize with namespace in experiment resource reference.")
+		}
+	}
+
+	filterContext := &common.FilterContext{ReferenceKey: &common.ReferenceKey{Type: common.Experiment, ID: request.GetExperimentId()}}
+	runs, total_size, nextPageToken, err := s.resourceManager.ListRuns(filterContext, opts)
+	if err != nil {
+		return nil, util.Wrap(err, "Failed to list runs.")
+	}
+	return &api.ListRunByExperimentResponse{Runs: ToApiRuns(runs), TotalSize: int32(total_size), NextPageToken: nextPageToken}, nil
+}
+
+func getNamespaceFromListRunsRequest(request *api.ListRunsRequest, filterContext *common.FilterContext, rm *resource.ResourceManager) (string, error) {
+	//The new way for sending the Namespace!!
+	//the namespace from the experiment.
+	if request.Namespace != "" {
+		return request.Namespace, nil
+	}
+
+	// Deprecated way
+	//api.ListRunsRequest.ResourceReferenceKey is Deprecated
+	refKey := filterContext.ReferenceKey
+	if refKey == nil {
+		return "", util.NewInvalidInputError("ListRuns must filter by namespace in multi-user mode.")
+	}
+	if refKey.Type == common.Namespace {
+		namespace := refKey.ID
+		if len(namespace) == 0 {
+			return "nil", util.NewInvalidInputError("Invalid resource references for ListRuns. Namespace is empty. Resource References are Deprecated. Consider Using Namespace instead or call another endpoint.")
+		}
+		return namespace, nil
+	} else if refKey.Type == common.Experiment || refKey.Type == "ExperimentUUID" {
+		// "ExperimentUUID" was introduced for perf optimization. We accept both refKey.Type for backward-compatible reason.
+		experimentID := refKey.ID
+		if len(experimentID) == 0 {
+			return "", util.NewInvalidInputError("Invalid resource references for run. Experiment ID is empty. Resource References are Deprecated. Consider Using Namespace instead or call another endpoint.")
+		}
+		namespace, err := rm.GetNamespaceFromExperimentID(experimentID)
+		if err != nil {
+			return "", util.Wrap(err, "Run's experiment has no namespace.")
+		}
+		return namespace, nil
+	}
+	return "", util.NewInvalidInputError("Invalid resource references for ListRuns. Got %+v", request.ResourceReferenceKey) //better error message
+
 }
 
 func (s *RunServer) ArchiveRun(ctx context.Context, request *api.ArchiveRunRequest) (*empty.Empty, error) {
@@ -315,12 +419,13 @@ func (s *RunServer) ReadArtifact(ctx context.Context, request *api.ReadArtifactR
 	}, nil
 }
 
+//TODO all tests in run_server_test.go and TestArchiveAndUnarchiveExperiment to be updated
 func (s *RunServer) validateCreateRunRequest(request *api.CreateRunRequest) error {
 	run := request.Run
 	if run.Name == "" {
 		return util.NewInvalidInputError("The run name is empty. Please specify a valid name.")
 	}
-	return ValidatePipelineSpecAndResourceReferences(s.resourceManager, run.PipelineSpec, run.ResourceReferences)
+	return ValidatePipelineSpecAndVersion(s.resourceManager, run.PipelineSpec, request.Run.PipelineVersionId)
 }
 
 func (s *RunServer) TerminateRun(ctx context.Context, request *api.TerminateRunRequest) (*empty.Empty, error) {

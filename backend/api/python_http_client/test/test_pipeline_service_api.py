@@ -42,10 +42,10 @@ class TestPipelineServiceApi(unittest.TestCase):
         """
         pass
 
-    def test_delete_pipeline(self):
-        """Test case for delete_pipeline
+    def test_delete_pipeline_by_name(self):
+        """Test case for delete_pipeline_by_name
 
-        Deletes a pipeline and its pipeline versions.  # noqa: E501
+        Delete a pipeline by Name (and namespace)  # noqa: E501
         """
         pass
 

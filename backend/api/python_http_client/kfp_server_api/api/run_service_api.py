@@ -549,6 +549,8 @@ class RunServiceApi(object):
         :type resource_reference_key_id: str
         :param filter: A url-encoded, JSON-serialized Filter protocol buffer (see [filter.proto](https://github.com/kubeflow/pipelines/blob/master/backend/api/filter.proto)).
         :type filter: str
+        :param namespace: [optional] Namespace to filter on.
+        :type namespace: str
         :param async_req: Whether to execute the request asynchronously.
         :type async_req: bool, optional
         :param _preload_content: if False, the urllib3.HTTPResponse object will
@@ -587,6 +589,8 @@ class RunServiceApi(object):
         :type resource_reference_key_id: str
         :param filter: A url-encoded, JSON-serialized Filter protocol buffer (see [filter.proto](https://github.com/kubeflow/pipelines/blob/master/backend/api/filter.proto)).
         :type filter: str
+        :param namespace: [optional] Namespace to filter on.
+        :type namespace: str
         :param async_req: Whether to execute the request asynchronously.
         :type async_req: bool, optional
         :param _return_http_data_only: response data without head status code
@@ -614,7 +618,8 @@ class RunServiceApi(object):
             'sort_by',
             'resource_reference_key_type',
             'resource_reference_key_id',
-            'filter'
+            'filter',
+            'namespace'
         ]
         all_params.extend(
             [
@@ -651,6 +656,8 @@ class RunServiceApi(object):
             query_params.append(('resource_reference_key.id', local_var_params['resource_reference_key_id']))  # noqa: E501
         if 'filter' in local_var_params and local_var_params['filter'] is not None:  # noqa: E501
             query_params.append(('filter', local_var_params['filter']))  # noqa: E501
+        if 'namespace' in local_var_params and local_var_params['namespace'] is not None:  # noqa: E501
+            query_params.append(('namespace', local_var_params['namespace']))  # noqa: E501
 
         header_params = {}
 
@@ -674,6 +681,170 @@ class RunServiceApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='ApiListRunsResponse',  # noqa: E501
+            auth_settings=auth_settings,
+            async_req=local_var_params.get('async_req'),
+            _return_http_data_only=local_var_params.get('_return_http_data_only'),  # noqa: E501
+            _preload_content=local_var_params.get('_preload_content', True),
+            _request_timeout=local_var_params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def list_runs_by_experiment(self, experiment_id, **kwargs):  # noqa: E501
+        """list_runs_by_experiment  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.list_runs_by_experiment(experiment_id, async_req=True)
+        >>> result = thread.get()
+
+        :param experiment_id: The ID of the Experiment the runs belong to. (required)
+        :type experiment_id: str
+        :param page_token: A page token to request the next page of results. The token is acquried from the nextPageToken field of the response from the previous ListRuns call or can be omitted when fetching the first page.
+        :type page_token: str
+        :param page_size: The number of runs to be listed per page. If there are more runs than this number, the response message will contain a nextPageToken field you can use to fetch the next page.
+        :type page_size: int
+        :param sort_by: Can be format of \"field_name\", \"field_name asc\" or \"field_name desc\" (Example, \"name asc\" or \"id desc\"). Ascending by default.
+        :type sort_by: str
+        :param resource_reference_key_type: The type of the resource that referred to.
+        :type resource_reference_key_type: str
+        :param resource_reference_key_id: The ID of the resource that referred to.
+        :type resource_reference_key_id: str
+        :param filter: A url-encoded, JSON-serialized Filter protocol buffer (see [filter.proto](https://github.com/kubeflow/pipelines/blob/master/backend/api/filter.proto)).
+        :type filter: str
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _preload_content: if False, the urllib3.HTTPResponse object will
+                                 be returned without reading/decoding response
+                                 data. Default is True.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :return: Returns the result object.
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: ApiListRunByExperimentResponse
+        """
+        kwargs['_return_http_data_only'] = True
+        return self.list_runs_by_experiment_with_http_info(experiment_id, **kwargs)  # noqa: E501
+
+    def list_runs_by_experiment_with_http_info(self, experiment_id, **kwargs):  # noqa: E501
+        """list_runs_by_experiment  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.list_runs_by_experiment_with_http_info(experiment_id, async_req=True)
+        >>> result = thread.get()
+
+        :param experiment_id: The ID of the Experiment the runs belong to. (required)
+        :type experiment_id: str
+        :param page_token: A page token to request the next page of results. The token is acquried from the nextPageToken field of the response from the previous ListRuns call or can be omitted when fetching the first page.
+        :type page_token: str
+        :param page_size: The number of runs to be listed per page. If there are more runs than this number, the response message will contain a nextPageToken field you can use to fetch the next page.
+        :type page_size: int
+        :param sort_by: Can be format of \"field_name\", \"field_name asc\" or \"field_name desc\" (Example, \"name asc\" or \"id desc\"). Ascending by default.
+        :type sort_by: str
+        :param resource_reference_key_type: The type of the resource that referred to.
+        :type resource_reference_key_type: str
+        :param resource_reference_key_id: The ID of the resource that referred to.
+        :type resource_reference_key_id: str
+        :param filter: A url-encoded, JSON-serialized Filter protocol buffer (see [filter.proto](https://github.com/kubeflow/pipelines/blob/master/backend/api/filter.proto)).
+        :type filter: str
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _return_http_data_only: response data without head status code
+                                       and headers
+        :type _return_http_data_only: bool, optional
+        :param _preload_content: if False, the urllib3.HTTPResponse object will
+                                 be returned without reading/decoding response
+                                 data. Default is True.
+        :type _preload_content: bool, optional
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :return: Returns the result object.
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: tuple(ApiListRunByExperimentResponse, status_code(int), headers(HTTPHeaderDict))
+        """
+
+        local_var_params = locals()
+
+        all_params = [
+            'experiment_id',
+            'page_token',
+            'page_size',
+            'sort_by',
+            'resource_reference_key_type',
+            'resource_reference_key_id',
+            'filter'
+        ]
+        all_params.extend(
+            [
+                'async_req',
+                '_return_http_data_only',
+                '_preload_content',
+                '_request_timeout'
+            ]
+        )
+
+        for key, val in six.iteritems(local_var_params['kwargs']):
+            if key not in all_params:
+                raise ApiTypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method list_runs_by_experiment" % key
+                )
+            local_var_params[key] = val
+        del local_var_params['kwargs']
+        # verify the required parameter 'experiment_id' is set
+        if self.api_client.client_side_validation and ('experiment_id' not in local_var_params or  # noqa: E501
+                                                        local_var_params['experiment_id'] is None):  # noqa: E501
+            raise ApiValueError("Missing the required parameter `experiment_id` when calling `list_runs_by_experiment`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'experiment_id' in local_var_params:
+            path_params['experiment_id'] = local_var_params['experiment_id']  # noqa: E501
+
+        query_params = []
+        if 'page_token' in local_var_params and local_var_params['page_token'] is not None:  # noqa: E501
+            query_params.append(('page_token', local_var_params['page_token']))  # noqa: E501
+        if 'page_size' in local_var_params and local_var_params['page_size'] is not None:  # noqa: E501
+            query_params.append(('page_size', local_var_params['page_size']))  # noqa: E501
+        if 'sort_by' in local_var_params and local_var_params['sort_by'] is not None:  # noqa: E501
+            query_params.append(('sort_by', local_var_params['sort_by']))  # noqa: E501
+        if 'resource_reference_key_type' in local_var_params and local_var_params['resource_reference_key_type'] is not None:  # noqa: E501
+            query_params.append(('resource_reference_key.type', local_var_params['resource_reference_key_type']))  # noqa: E501
+        if 'resource_reference_key_id' in local_var_params and local_var_params['resource_reference_key_id'] is not None:  # noqa: E501
+            query_params.append(('resource_reference_key.id', local_var_params['resource_reference_key_id']))  # noqa: E501
+        if 'filter' in local_var_params and local_var_params['filter'] is not None:  # noqa: E501
+            query_params.append(('filter', local_var_params['filter']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['Bearer']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/apis/v1beta1/experiments/{experiment_id}/runs', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='ApiListRunByExperimentResponse',  # noqa: E501
             auth_settings=auth_settings,
             async_req=local_var_params.get('async_req'),
             _return_http_data_only=local_var_params.get('_return_http_data_only'),  # noqa: E501

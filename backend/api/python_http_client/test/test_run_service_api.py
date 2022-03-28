@@ -63,6 +63,12 @@ class TestRunServiceApi(unittest.TestCase):
         """
         pass
 
+    def test_list_runs_by_experiment(self):
+        """Test case for list_runs_by_experiment
+
+        """
+        pass
+
     def test_read_artifact(self):
         """Test case for read_artifact
 

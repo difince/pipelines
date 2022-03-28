@@ -219,11 +219,10 @@ func ValidateExperimentResourceReference(resourceManager *resource.ResourceManag
 	return nil
 }
 
-func ValidatePipelineSpecAndResourceReferences(resourceManager *resource.ResourceManager, spec *api.PipelineSpec, resourceReferences []*api.ResourceReference) error {
+func ValidatePipelineSpecAndVersion(resourceManager *resource.ResourceManager, spec *api.PipelineSpec, pipelineVersionId string) error {
 	pipelineId := spec.GetPipelineId()
 	workflowManifest := spec.GetWorkflowManifest()
 	pipelineManifest := spec.GetPipelineManifest()
-	pipelineVersionId := getPipelineVersionIdFromResourceReferences(resourceManager, resourceReferences)
 
 	if workflowManifest != "" || pipelineManifest != "" {
 		if workflowManifest != "" && pipelineManifest != "" {
@@ -268,6 +267,7 @@ func ValidatePipelineSpecAndResourceReferences(resourceManager *resource.Resourc
 	}
 	return nil
 }
+
 func validateParameters(parameters []*api.Parameter) error {
 	if parameters != nil {
 		paramsBytes, err := json.Marshal(parameters)

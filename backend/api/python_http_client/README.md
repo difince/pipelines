@@ -111,7 +111,7 @@ Class | Method | HTTP request | Description
 *JobServiceApi* | [**list_jobs**](docs/JobServiceApi.md#list_jobs) | **GET** /apis/v1beta1/jobs | Finds all jobs.
 *PipelineServiceApi* | [**create_pipeline**](docs/PipelineServiceApi.md#create_pipeline) | **POST** /apis/v1beta1/pipelines | Creates a pipeline.
 *PipelineServiceApi* | [**create_pipeline_version**](docs/PipelineServiceApi.md#create_pipeline_version) | **POST** /apis/v1beta1/pipeline_versions | Adds a pipeline version to the specified pipeline.
-*PipelineServiceApi* | [**delete_pipeline**](docs/PipelineServiceApi.md#delete_pipeline) | **DELETE** /apis/v1beta1/pipelines/{id} | Deletes a pipeline and its pipeline versions.
+*PipelineServiceApi* | [**delete_pipeline_by_name**](docs/PipelineServiceApi.md#delete_pipeline_by_name) | **DELETE** /apis/v1beta1/namespaces/{namespace}/pipelines/{name} | Delete a pipeline by Name (and namespace)
 *PipelineServiceApi* | [**delete_pipeline_version**](docs/PipelineServiceApi.md#delete_pipeline_version) | **DELETE** /apis/v1beta1/pipeline_versions/{version_id} | Deletes a pipeline version by pipeline version ID. If the deleted pipeline version is the default pipeline version, the pipeline&#39;s default version changes to the pipeline&#39;s most recent pipeline version. If there are no remaining pipeline versions, the pipeline will have no default version. Examines the run_service_api.ipynb notebook to learn more about creating a run using a pipeline version (https://github.com/kubeflow/pipelines/blob/master/tools/benchmarks/run_service_api.ipynb).
 *PipelineServiceApi* | [**get_pipeline**](docs/PipelineServiceApi.md#get_pipeline) | **GET** /apis/v1beta1/pipelines/{id} | Finds a specific pipeline by ID.
 *PipelineServiceApi* | [**get_pipeline_by_name**](docs/PipelineServiceApi.md#get_pipeline_by_name) | **GET** /apis/v1beta1/namespaces/{namespace}/pipelines/{name} | Finds a pipeline by Name (and namespace)
@@ -128,6 +128,7 @@ Class | Method | HTTP request | Description
 *RunServiceApi* | [**delete_run**](docs/RunServiceApi.md#delete_run) | **DELETE** /apis/v1beta1/runs/{id} | Deletes a run.
 *RunServiceApi* | [**get_run**](docs/RunServiceApi.md#get_run) | **GET** /apis/v1beta1/runs/{run_id} | Finds a specific run by ID.
 *RunServiceApi* | [**list_runs**](docs/RunServiceApi.md#list_runs) | **GET** /apis/v1beta1/runs | Finds all runs.
+*RunServiceApi* | [**list_runs_by_experiment**](docs/RunServiceApi.md#list_runs_by_experiment) | **GET** /apis/v1beta1/experiments/{experiment_id}/runs | 
 *RunServiceApi* | [**read_artifact**](docs/RunServiceApi.md#read_artifact) | **GET** /apis/v1beta1/runs/{run_id}/nodes/{node_id}/artifacts/{artifact_name}:read | Finds a run&#39;s artifact data.
 *RunServiceApi* | [**report_run_metrics**](docs/RunServiceApi.md#report_run_metrics) | **POST** /apis/v1beta1/runs/{run_id}:reportMetrics | ReportRunMetrics reports metrics of a run. Each metric is reported in its own transaction, so this API accepts partial failures. Metric can be uniquely identified by (run_id, node_id, name). Duplicate reporting will be ignored by the API. First reporting wins.
 *RunServiceApi* | [**retry_run**](docs/RunServiceApi.md#retry_run) | **POST** /apis/v1beta1/runs/{run_id}/retry | Re-initiates a failed or terminated run.
@@ -147,6 +148,7 @@ Class | Method | HTTP request | Description
  - [ApiListJobsResponse](docs/ApiListJobsResponse.md)
  - [ApiListPipelineVersionsResponse](docs/ApiListPipelineVersionsResponse.md)
  - [ApiListPipelinesResponse](docs/ApiListPipelinesResponse.md)
+ - [ApiListRunByExperimentResponse](docs/ApiListRunByExperimentResponse.md)
  - [ApiListRunsResponse](docs/ApiListRunsResponse.md)
  - [ApiParameter](docs/ApiParameter.md)
  - [ApiPeriodicSchedule](docs/ApiPeriodicSchedule.md)

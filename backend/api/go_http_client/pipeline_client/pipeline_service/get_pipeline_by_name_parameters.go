@@ -70,7 +70,7 @@ type GetPipelineByNameParams struct {
 	  The Namespace the pipeline belongs to.
 	In the case of shared pipelines and KFPipeline standalone installation,
 	the pipeline name is the only needed field for unique resource lookup (namespace is not required).
-	In those case, please provide hyphen (dash character, "-").
+	In those cases, please provide a hyphen (dash character, "-").
 
 	*/
 	Namespace string

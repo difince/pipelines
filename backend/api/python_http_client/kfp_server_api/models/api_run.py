@@ -45,7 +45,9 @@ class ApiRun(object):
         'finished_at': 'datetime',
         'status': 'str',
         'error': 'str',
-        'metrics': 'list[ApiRunMetric]'
+        'metrics': 'list[ApiRunMetric]',
+        'experiment_id': 'str',
+        'pipeline_version_id': 'str'
     }
 
     attribute_map = {
@@ -61,10 +63,12 @@ class ApiRun(object):
         'finished_at': 'finished_at',
         'status': 'status',
         'error': 'error',
-        'metrics': 'metrics'
+        'metrics': 'metrics',
+        'experiment_id': 'experiment_id',
+        'pipeline_version_id': 'pipeline_version_id'
     }
 
-    def __init__(self, id=None, name=None, storage_state=None, description=None, pipeline_spec=None, resource_references=None, service_account=None, created_at=None, scheduled_at=None, finished_at=None, status=None, error=None, metrics=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, id=None, name=None, storage_state=None, description=None, pipeline_spec=None, resource_references=None, service_account=None, created_at=None, scheduled_at=None, finished_at=None, status=None, error=None, metrics=None, experiment_id=None, pipeline_version_id=None, local_vars_configuration=None):  # noqa: E501
         """ApiRun - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -83,6 +87,8 @@ class ApiRun(object):
         self._status = None
         self._error = None
         self._metrics = None
+        self._experiment_id = None
+        self._pipeline_version_id = None
         self.discriminator = None
 
         if id is not None:
@@ -111,6 +117,10 @@ class ApiRun(object):
             self.error = error
         if metrics is not None:
             self.metrics = metrics
+        if experiment_id is not None:
+            self.experiment_id = experiment_id
+        if pipeline_version_id is not None:
+            self.pipeline_version_id = pipeline_version_id
 
     @property
     def id(self):
@@ -225,7 +235,7 @@ class ApiRun(object):
     def resource_references(self):
         """Gets the resource_references of this ApiRun.  # noqa: E501
 
-        Optional input field. Specify which resource this run belongs to. When creating a run from a particular pipeline version, the pipeline version can be specified here.  # noqa: E501
+        Deprecated Optional input field. Specify which resource this run belongs to. When creating a run from a particular pipeline version, the pipeline version can be specified here.  # noqa: E501
 
         :return: The resource_references of this ApiRun.  # noqa: E501
         :rtype: list[ApiResourceReference]
@@ -236,7 +246,7 @@ class ApiRun(object):
     def resource_references(self, resource_references):
         """Sets the resource_references of this ApiRun.
 
-        Optional input field. Specify which resource this run belongs to. When creating a run from a particular pipeline version, the pipeline version can be specified here.  # noqa: E501
+        Deprecated Optional input field. Specify which resource this run belongs to. When creating a run from a particular pipeline version, the pipeline version can be specified here.  # noqa: E501
 
         :param resource_references: The resource_references of this ApiRun.  # noqa: E501
         :type resource_references: list[ApiResourceReference]
@@ -402,6 +412,48 @@ class ApiRun(object):
         """
 
         self._metrics = metrics
+
+    @property
+    def experiment_id(self):
+        """Gets the experiment_id of this ApiRun.  # noqa: E501
+
+
+        :return: The experiment_id of this ApiRun.  # noqa: E501
+        :rtype: str
+        """
+        return self._experiment_id
+
+    @experiment_id.setter
+    def experiment_id(self, experiment_id):
+        """Sets the experiment_id of this ApiRun.
+
+
+        :param experiment_id: The experiment_id of this ApiRun.  # noqa: E501
+        :type experiment_id: str
+        """
+
+        self._experiment_id = experiment_id
+
+    @property
+    def pipeline_version_id(self):
+        """Gets the pipeline_version_id of this ApiRun.  # noqa: E501
+
+
+        :return: The pipeline_version_id of this ApiRun.  # noqa: E501
+        :rtype: str
+        """
+        return self._pipeline_version_id
+
+    @pipeline_version_id.setter
+    def pipeline_version_id(self, pipeline_version_id):
+        """Sets the pipeline_version_id of this ApiRun.
+
+
+        :param pipeline_version_id: The pipeline_version_id of this ApiRun.  # noqa: E501
+        :type pipeline_version_id: str
+        """
+
+        self._pipeline_version_id = pipeline_version_id
 
     def to_dict(self):
         """Returns the model properties as a dict"""

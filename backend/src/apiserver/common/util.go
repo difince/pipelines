@@ -16,14 +16,16 @@ package common
 
 import (
 	api "github.com/kubeflow/pipelines/backend/api/go_client"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/model"
 	"strings"
 )
+
 const (
 	DefaultPipelineRunnerServiceAccount = "pipeline-runner"
 	HasDefaultBucketEnvVar              = "HAS_DEFAULT_BUCKET"
 	DefaultBucketNameEnvVar             = "BUCKET_NAME"
-    ProjectIDEnvVar                     = "PROJECT_ID"
-    )
+	ProjectIDEnvVar                     = "PROJECT_ID"
+)
 
 func GetNamespaceFromAPIResourceReferences(resourceRefs []*api.ResourceReference) string {
 	namespace := ""
@@ -36,11 +38,11 @@ func GetNamespaceFromAPIResourceReferences(resourceRefs []*api.ResourceReference
 	return namespace
 }
 
-func GetExperimentIDFromAPIResourceReferences(resourceRefs []*api.ResourceReference) string {
+func GetExperimentIDFromAPIResourceReferences(resourceRefs []*model.ResourceReference) string {
 	experimentID := ""
 	for _, resourceRef := range resourceRefs {
-		if resourceRef.Key.Type == api.ResourceType_EXPERIMENT {
-			experimentID = resourceRef.Key.Id
+		if resourceRef.ReferenceType == Experiment {
+			experimentID = resourceRef.ReferenceUUID
 			break
 		}
 	}

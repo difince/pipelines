@@ -95,7 +95,9 @@ class TestApiRunDetail(unittest.TestCase):
                             node_id = '0', 
                             number_value = 1.337, 
                             format = 'UNSPECIFIED', )
-                        ], ), 
+                        ], 
+                    experiment_id = '0', 
+                    pipeline_version_id = '0', ), 
                 pipeline_runtime = kfp_server_api.models.api_pipeline_runtime.apiPipelineRuntime(
                     pipeline_manifest = '0', 
                     workflow_manifest = '0', )

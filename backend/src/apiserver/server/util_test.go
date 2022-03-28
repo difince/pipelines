@@ -282,7 +282,7 @@ func TestValidatePipelineSpecAndResourceReferences_WorkflowManifestAndPipelineVe
 	defer clients.Close()
 	spec := &api.PipelineSpec{
 		WorkflowManifest: testWorkflow.ToStringForStore()}
-	err := ValidatePipelineSpecAndResourceReferences(manager, spec, validReferencesOfExperimentAndPipelineVersion)
+	err := ValidatePipelineSpecAndVersion(manager, spec, validReferencesOfExperimentAndPipelineVersion)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "Please don't specify a pipeline version or pipeline ID when you specify a workflow manifest or pipeline manifest.")
 }
@@ -293,7 +293,7 @@ func TestValidatePipelineSpecAndResourceReferences_WorkflowManifestAndPipelineID
 	spec := &api.PipelineSpec{
 		PipelineId:       resource.DefaultFakeUUID,
 		WorkflowManifest: testWorkflow.ToStringForStore()}
-	err := ValidatePipelineSpecAndResourceReferences(manager, spec, validReference)
+	err := ValidatePipelineSpecAndVersion(manager, spec, validReference)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "Please don't specify a pipeline version or pipeline ID when you specify a workflow manifest or pipeline manifest.")
 }
@@ -302,7 +302,7 @@ func TestValidatePipelineSpecAndResourceReferences_InvalidWorkflowManifest(t *te
 	clients, manager, _ := initWithExperiment(t)
 	defer clients.Close()
 	spec := &api.PipelineSpec{WorkflowManifest: "I am an invalid manifest"}
-	err := ValidatePipelineSpecAndResourceReferences(manager, spec, validReference)
+	err := ValidatePipelineSpecAndVersion(manager, spec, validReference)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "Invalid argo workflow format.")
 }
@@ -310,7 +310,7 @@ func TestValidatePipelineSpecAndResourceReferences_InvalidWorkflowManifest(t *te
 func TestValidatePipelineSpecAndResourceReferences_NilPipelineSpecAndEmptyPipelineVersion(t *testing.T) {
 	clients, manager, _ := initWithExperimentAndPipelineVersion(t)
 	defer clients.Close()
-	err := ValidatePipelineSpecAndResourceReferences(manager, nil, validReference)
+	err := ValidatePipelineSpecAndVersion(manager, nil, validReference)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "Please specify a pipeline by providing a (workflow manifest or pipeline manifest) or (pipeline id or/and pipeline version).")
 }
@@ -319,7 +319,7 @@ func TestValidatePipelineSpecAndResourceReferences_EmptyPipelineSpecAndEmptyPipe
 	clients, manager, _ := initWithExperimentAndPipelineVersion(t)
 	defer clients.Close()
 	spec := &api.PipelineSpec{}
-	err := ValidatePipelineSpecAndResourceReferences(manager, spec, validReference)
+	err := ValidatePipelineSpecAndVersion(manager, spec, validReference)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "Please specify a pipeline by providing a (workflow manifest or pipeline manifest) or (pipeline id or/and pipeline version).")
 }
@@ -328,7 +328,7 @@ func TestValidatePipelineSpecAndResourceReferences_InvalidPipelineId(t *testing.
 	clients, manager, _ := initWithExperimentAndPipelineVersion(t)
 	defer clients.Close()
 	spec := &api.PipelineSpec{PipelineId: "not-found"}
-	err := ValidatePipelineSpecAndResourceReferences(manager, spec, validReference)
+	err := ValidatePipelineSpecAndVersion(manager, spec, validReference)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "Get pipelineId failed.")
 }
@@ -336,7 +336,7 @@ func TestValidatePipelineSpecAndResourceReferences_InvalidPipelineId(t *testing.
 func TestValidatePipelineSpecAndResourceReferences_InvalidPipelineVersionId(t *testing.T) {
 	clients, manager, _ := initWithExperimentAndPipelineVersion(t)
 	defer clients.Close()
-	err := ValidatePipelineSpecAndResourceReferences(manager, nil, referencesOfInvalidPipelineVersion)
+	err := ValidatePipelineSpecAndVersion(manager, nil, referencesOfInvalidPipelineVersion)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "Get pipelineVersionId failed.")
 }
@@ -347,7 +347,7 @@ func TestValidatePipelineSpecAndResourceReferences_PipelineIdNotParentOfPipeline
 	defer clients.Close()
 	spec := &api.PipelineSpec{
 		PipelineId: resource.NonDefaultFakeUUID}
-	err := ValidatePipelineSpecAndResourceReferences(manager, spec, validReferencesOfExperimentAndPipelineVersion)
+	err := ValidatePipelineSpecAndVersion(manager, spec, validReferencesOfExperimentAndPipelineVersion)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "pipeline ID should be parent of pipeline version.")
 }
@@ -361,7 +361,7 @@ func TestValidatePipelineSpecAndResourceReferences_ParameterTooLongWithPipelineI
 		params = append(params, &api.Parameter{Name: "param2", Value: "world"})
 	}
 	spec := &api.PipelineSpec{PipelineId: resource.DefaultFakeUUID, Parameters: params}
-	err := ValidatePipelineSpecAndResourceReferences(manager, spec, validReference)
+	err := ValidatePipelineSpecAndVersion(manager, spec, validReference)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "The input parameter length exceed maximum size")
 }
@@ -375,7 +375,7 @@ func TestValidatePipelineSpecAndResourceReferences_ParameterTooLongWithWorkflowM
 		params = append(params, &api.Parameter{Name: "param2", Value: "world"})
 	}
 	spec := &api.PipelineSpec{WorkflowManifest: testWorkflow.ToStringForStore(), Parameters: params}
-	err := ValidatePipelineSpecAndResourceReferences(manager, spec, validReference)
+	err := ValidatePipelineSpecAndVersion(manager, spec, validReference)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "The input parameter length exceed maximum size")
 }
@@ -385,7 +385,7 @@ func TestValidatePipelineSpecAndResourceReferences_ValidPipelineIdAndPipelineVer
 	defer clients.Close()
 	spec := &api.PipelineSpec{
 		PipelineId: resource.DefaultFakeUUID}
-	err := ValidatePipelineSpecAndResourceReferences(manager, spec, validReferencesOfExperimentAndPipelineVersion)
+	err := ValidatePipelineSpecAndVersion(manager, spec, validReferencesOfExperimentAndPipelineVersion)
 	assert.Nil(t, err)
 }
 
@@ -393,6 +393,6 @@ func TestValidatePipelineSpecAndResourceReferences_ValidWorkflowManifest(t *test
 	clients, manager, _ := initWithExperiment(t)
 	defer clients.Close()
 	spec := &api.PipelineSpec{WorkflowManifest: testWorkflow.ToStringForStore()}
-	err := ValidatePipelineSpecAndResourceReferences(manager, spec, validReference)
+	err := ValidatePipelineSpecAndVersion(manager, spec, validReference)
 	assert.Nil(t, err)
 }

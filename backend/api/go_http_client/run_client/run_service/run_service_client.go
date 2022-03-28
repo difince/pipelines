@@ -170,6 +170,35 @@ func (a *Client) ListRuns(params *ListRunsParams, authInfo runtime.ClientAuthInf
 }
 
 /*
+ListRunsByExperiment list runs by experiment API
+*/
+func (a *Client) ListRunsByExperiment(params *ListRunsByExperimentParams, authInfo runtime.ClientAuthInfoWriter) (*ListRunsByExperimentOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListRunsByExperimentParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "ListRunsByExperiment",
+		Method:             "GET",
+		PathPattern:        "/apis/v1beta1/experiments/{experiment_id}/runs",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http", "https"},
+		Params:             params,
+		Reader:             &ListRunsByExperimentReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*ListRunsByExperimentOK), nil
+
+}
+
+/*
 ReadArtifact finds a run s artifact data
 */
 func (a *Client) ReadArtifact(params *ReadArtifactParams, authInfo runtime.ClientAuthInfoWriter) (*ReadArtifactOK, error) {

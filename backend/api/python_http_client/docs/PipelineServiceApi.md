@@ -6,7 +6,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**create_pipeline**](PipelineServiceApi.md#create_pipeline) | **POST** /apis/v1beta1/pipelines | Creates a pipeline.
 [**create_pipeline_version**](PipelineServiceApi.md#create_pipeline_version) | **POST** /apis/v1beta1/pipeline_versions | Adds a pipeline version to the specified pipeline.
-[**delete_pipeline**](PipelineServiceApi.md#delete_pipeline) | **DELETE** /apis/v1beta1/pipelines/{id} | Deletes a pipeline and its pipeline versions.
+[**delete_pipeline_by_name**](PipelineServiceApi.md#delete_pipeline_by_name) | **DELETE** /apis/v1beta1/namespaces/{namespace}/pipelines/{name} | Delete a pipeline by Name (and namespace)
 [**delete_pipeline_version**](PipelineServiceApi.md#delete_pipeline_version) | **DELETE** /apis/v1beta1/pipeline_versions/{version_id} | Deletes a pipeline version by pipeline version ID. If the deleted pipeline version is the default pipeline version, the pipeline&#39;s default version changes to the pipeline&#39;s most recent pipeline version. If there are no remaining pipeline versions, the pipeline will have no default version. Examines the run_service_api.ipynb notebook to learn more about creating a run using a pipeline version (https://github.com/kubeflow/pipelines/blob/master/tools/benchmarks/run_service_api.ipynb).
 [**get_pipeline**](PipelineServiceApi.md#get_pipeline) | **GET** /apis/v1beta1/pipelines/{id} | Finds a specific pipeline by ID.
 [**get_pipeline_by_name**](PipelineServiceApi.md#get_pipeline_by_name) | **GET** /apis/v1beta1/namespaces/{namespace}/pipelines/{name} | Finds a pipeline by Name (and namespace)
@@ -170,10 +170,10 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **delete_pipeline**
-> object delete_pipeline(id)
+# **delete_pipeline_by_name**
+> object delete_pipeline_by_name(namespace, name)
 
-Deletes a pipeline and its pipeline versions.
+Delete a pipeline by Name (and namespace)
 
 ### Example
 
@@ -209,21 +209,23 @@ configuration = kfp_server_api.Configuration(
 with kfp_server_api.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = kfp_server_api.PipelineServiceApi(api_client)
-    id = 'id_example' # str | The ID of the pipeline to be deleted.
+    namespace = 'namespace_example' # str | The Namespace the pipeline belongs to. In the case of shared pipelines and KFPipeline standalone installation, the pipeline name is the only needed field for unique resource lookup.. In those cases, please provide a hyphen (dash character, \"-\") for the namespace.
+name = 'name_example' # str | The Name of the pipeline to be deleted.
 
     try:
-        # Deletes a pipeline and its pipeline versions.
-        api_response = api_instance.delete_pipeline(id)
+        # Delete a pipeline by Name (and namespace)
+        api_response = api_instance.delete_pipeline_by_name(namespace, name)
         pprint(api_response)
     except ApiException as e:
-        print("Exception when calling PipelineServiceApi->delete_pipeline: %s\n" % e)
+        print("Exception when calling PipelineServiceApi->delete_pipeline_by_name: %s\n" % e)
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **str**| The ID of the pipeline to be deleted. | 
+ **namespace** | **str**| The Namespace the pipeline belongs to. In the case of shared pipelines and KFPipeline standalone installation, the pipeline name is the only needed field for unique resource lookup.. In those cases, please provide a hyphen (dash character, \&quot;-\&quot;) for the namespace. | 
+ **name** | **str**| The Name of the pipeline to be deleted. | 
 
 ### Return type
 
@@ -437,7 +439,7 @@ configuration = kfp_server_api.Configuration(
 with kfp_server_api.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = kfp_server_api.PipelineServiceApi(api_client)
-    namespace = 'namespace_example' # str | The Namespace the pipeline belongs to. In the case of shared pipelines and KFPipeline standalone installation, the pipeline name is the only needed field for unique resource lookup (namespace is not required). In those case, please provide hyphen (dash character, \"-\").
+    namespace = 'namespace_example' # str | The Namespace the pipeline belongs to. In the case of shared pipelines and KFPipeline standalone installation, the pipeline name is the only needed field for unique resource lookup (namespace is not required). In those cases, please provide a hyphen (dash character, \"-\").
 name = 'name_example' # str | The Name of the pipeline to be retrieved.
 
     try:
@@ -452,7 +454,7 @@ name = 'name_example' # str | The Name of the pipeline to be retrieved.
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **namespace** | **str**| The Namespace the pipeline belongs to. In the case of shared pipelines and KFPipeline standalone installation, the pipeline name is the only needed field for unique resource lookup (namespace is not required). In those case, please provide hyphen (dash character, \&quot;-\&quot;). | 
+ **namespace** | **str**| The Namespace the pipeline belongs to. In the case of shared pipelines and KFPipeline standalone installation, the pipeline name is the only needed field for unique resource lookup (namespace is not required). In those cases, please provide a hyphen (dash character, \&quot;-\&quot;). | 
  **name** | **str**| The Name of the pipeline to be retrieved. | 
 
 ### Return type

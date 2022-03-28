@@ -31,6 +31,9 @@ type APIRun struct {
 	// how to handle error. This is especially useful during listing call.
 	Error string `json:"error,omitempty"`
 
+	// experiment id
+	ExperimentID string `json:"experiment_id,omitempty"`
+
 	// Output. The time this run is finished.
 	// Format: date-time
 	FinishedAt strfmt.DateTime `json:"finished_at,omitempty"`
@@ -50,6 +53,11 @@ type APIRun struct {
 	// Describing what the pipeline manifest and parameters to use for the run.
 	PipelineSpec *APIPipelineSpec `json:"pipeline_spec,omitempty"`
 
+	// Optional in case pipeline_spec.PipelineSpecManifest or	WorkflowSpecManifest is provided.
+	// If both pipeline_spec.PipelineSpecManifest or	WorkflowSpecManifest are NOT provided pipeline_version_id should be provided
+	PipelineVersionID string `json:"pipeline_version_id,omitempty"`
+
+	// Deprecated
 	// Optional input field. Specify which resource this run belongs to.
 	// When creating a run from a particular pipeline version, the pipeline
 	// version can be specified here.

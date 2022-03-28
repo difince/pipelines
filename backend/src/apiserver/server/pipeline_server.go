@@ -282,6 +282,10 @@ func (s *PipelineServer) DeletePipeline(ctx context.Context, request *api.Delete
 	return &empty.Empty{}, nil
 }
 
+func (s *PipelineServer) DeletePipelineByName(ctx context.Context, request *api.DeletePipelineByNameRequest) (*empty.Empty, error) {
+	return &empty.Empty{}, nil
+}
+
 func (s *PipelineServer) GetTemplate(ctx context.Context, request *api.GetTemplateRequest) (*api.GetTemplateResponse, error) {
 	resourceAttributes := &authorizationv1.ResourceAttributes{
 		Verb: common.RbacResourceVerbList,

@@ -19,9 +19,7 @@ import (
 	"errors"
 	wfv1 "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1"
 	"github.com/argoproj/argo-workflows/v3/workflow/common"
-	api "github.com/kubeflow/pipelines/backend/api/go_client"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/client"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/model"
 	"github.com/kubeflow/pipelines/backend/src/common/util"
 	apierr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -97,24 +95,24 @@ func deletePods(ctx context.Context, k8sCoreClient client.KubernetesCoreInterfac
 // Convert PipelineId in PipelineSpec to the pipeline's default pipeline version.
 // This is for legacy usage of pipeline id to create run. The standard way to
 // create run is by specifying the pipeline version.
-func convertPipelineIdToDefaultPipelineVersion(pipelineSpec *api.PipelineSpec, resourceReferences *[]*api.ResourceReference, r *ResourceManager) error {
-	if pipelineSpec == nil || pipelineSpec.GetPipelineId() == "" {
-		return nil
-	}
-	// If there is already a pipeline version in resource references, don't convert pipeline id.
-	for _, reference := range *resourceReferences {
-		if reference.Key.Type == api.ResourceType_PIPELINE_VERSION && reference.Relationship == api.Relationship_CREATOR {
-			return nil
-		}
-	}
-	pipeline, err := r.pipelineStore.GetPipelineWithStatus(pipelineSpec.GetPipelineId(), model.PipelineReady)
-	if err != nil {
-		return util.Wrap(err, "Failed to find the specified pipeline")
-	}
-	// Add default pipeline version to resource references
-	*resourceReferences = append(*resourceReferences, &api.ResourceReference{
-		Key:          &api.ResourceKey{Type: api.ResourceType_PIPELINE_VERSION, Id: pipeline.DefaultVersionId},
-		Relationship: api.Relationship_CREATOR,
-	})
-	return nil
-}
+//func convertPipelineIdToDefaultPipelineVersion(pipelineSpec *api.PipelineSpec, r *ResourceManager) error {
+//	if pipelineSpec == nil || pipelineSpec.GetPipelineId() == "" {
+//		return nil
+//	}
+//	//// If there is already a pipeline version in resource references, don't convert pipeline id.
+//	//for _, reference := range *resourceReferences {
+//	//	if reference.ReferenceType == kfp_common.PipelineVersion {
+//	//		return nil
+//	//	}
+//	//}
+//	pipeline, err := r.pipelineStore.GetPipelineWithStatus(pipelineSpec.GetPipelineId(), model.PipelineReady)
+//	if err != nil {
+//		return util.Wrap(err, "Failed to find the specified pipeline")
+//	}
+//	//// Add default pipeline version to resource references
+//	//*resourceReferences = append(*resourceReferences, &model.ResourceReference{
+//	//	ReferenceType: kfp_common.PipelineVersion,
+//	//	ReferenceUUID: pipeline.DefaultVersionId,
+//	//})
+//	return pipeline.DefaultVersionId, nil
+//}

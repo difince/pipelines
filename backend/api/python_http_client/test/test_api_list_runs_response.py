@@ -96,7 +96,9 @@ class TestApiListRunsResponse(unittest.TestCase):
                                 node_id = '0', 
                                 number_value = 1.337, 
                                 format = 'UNSPECIFIED', )
-                            ], )
+                            ], 
+                        experiment_id = '0', 
+                        pipeline_version_id = '0', )
                     ], 
                 total_size = 56, 
                 next_page_token = '0'

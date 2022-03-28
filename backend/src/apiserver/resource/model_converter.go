@@ -25,6 +25,7 @@ import (
 	api "github.com/kubeflow/pipelines/backend/api/go_client"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/common"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/model"
+	//"github.com/kubeflow/pipelines/backend/src/apiserver/common/const"
 	"github.com/kubeflow/pipelines/backend/src/common/util"
 	"github.com/pkg/errors"
 )
@@ -60,7 +61,7 @@ func (r *ResourceManager) ToModelRunMetric(metric *api.RunMetric, runUUID string
 // The input run might not contain workflowSpecManifest and pipelineSpecManifest, but instead a pipeline ID.
 // The caller would retrieve manifest and pass in.
 func (r *ResourceManager) ToModelRunDetail(run *api.Run, runId string, workflow *util.Workflow, manifest string, templateType template.TemplateType) (*model.RunDetail, error) {
-	resourceReferences, err := r.toModelResourceReferences(runId, common.Run, run.GetResourceReferences())
+	resourceReferences, err := r.toModelResourceReferences(runId, common.Run, run.ExperimentId, run.PipelineVersionId)
 	if err != nil {
 		return nil, util.Wrap(err, "Unable to convert resource references.")
 	}
@@ -72,15 +73,10 @@ func (r *ResourceManager) ToModelRunDetail(run *api.Run, runId string, workflow 
 		}
 	}
 
-	experimentUUID, err := r.getOwningExperimentUUID(run.ResourceReferences)
-	if err != nil {
-		return nil, util.Wrap(err, "Error getting the experiment UUID")
-	}
-
 	runDetail := &model.RunDetail{
 		Run: model.Run{
 			UUID:               runId,
-			ExperimentUUID:     experimentUUID,
+			ExperimentUUID:     run.ExperimentId,
 			DisplayName:        run.Name,
 			Name:               workflow.Name,
 			Namespace:          workflow.Namespace,
@@ -120,60 +116,61 @@ func (r *ResourceManager) ToModelRunDetail(run *api.Run, runId string, workflow 
 }
 
 func (r *ResourceManager) ToModelJob(job *api.Job, swf *util.ScheduledWorkflow, manifest string, templateType template.TemplateType) (*model.Job, error) {
-	resourceReferences, err := r.toModelResourceReferences(string(swf.UID), common.Job, job.GetResourceReferences())
-	if err != nil {
-		return nil, util.Wrap(err, "Error to convert resource references.")
-	}
-	var pipelineName string
-	if job.GetPipelineSpec().GetPipelineId() != "" {
-		pipelineName, err = r.getResourceName(common.Pipeline, job.GetPipelineSpec().GetPipelineId())
-		if err != nil {
-			return nil, util.Wrap(err, "Error getting the pipeline name")
-		}
-	}
-	serviceAccount := ""
-	if swf.Spec.Workflow != nil {
-		serviceAccount = swf.Spec.Workflow.Spec.ServiceAccountName
-	}
-	modelJob := &model.Job{
-		UUID:               string(swf.UID),
-		DisplayName:        job.Name,
-		Name:               swf.Name,
-		Namespace:          swf.Namespace,
-		ServiceAccount:     serviceAccount,
-		Description:        job.Description,
-		Conditions:         swf.ConditionSummary(),
-		Enabled:            job.Enabled,
-		Trigger:            toModelTrigger(job.Trigger),
-		MaxConcurrency:     job.MaxConcurrency,
-		NoCatchup:          job.NoCatchup,
-		ResourceReferences: resourceReferences,
-		PipelineSpec: model.PipelineSpec{
-			PipelineId:   job.GetPipelineSpec().GetPipelineId(),
-			PipelineName: pipelineName,
-		}}
-
-	if templateType == template.V1 {
-		params, err := apiParametersToModelParameters(job.GetPipelineSpec().GetParameters())
-		if err != nil {
-			return nil, util.Wrap(err, "Unable to parse the parameter.")
-		}
-		modelJob.Parameters = params
-		modelJob.WorkflowSpecManifest = manifest
-		return modelJob, nil
-
-	} else if templateType == template.V2 {
-		params, err := runtimeConfigToModelParameters(job.GetPipelineSpec().GetRuntimeConfig())
-		if err != nil {
-			return nil, util.Wrap(err, "Unable to parse the parameter.")
-		}
-		modelJob.Parameters = params
-		modelJob.PipelineSpecManifest = manifest
-		return modelJob, nil
-
-	} else {
-		return nil, fmt.Errorf("failed to generate ModelJob with templateType %s", templateType)
-	}
+	//resourceReferences, err := r.ToModelResourceReferences(string(swf.UID), common.Job, job.GetResourceReferences())
+	//if err != nil {
+	//	return nil, util.Wrap(err, "Error to convert resource references.")
+	//}
+	//var pipelineName string
+	//if job.GetPipelineSpec().GetPipelineId() != "" {
+	//	pipelineName, err = r.getResourceName(common.Pipeline, job.GetPipelineSpec().GetPipelineId())
+	//	if err != nil {
+	//		return nil, util.Wrap(err, "Error getting the pipeline name")
+	//	}
+	//}
+	//serviceAccount := ""
+	//if swf.Spec.Workflow != nil {
+	//	serviceAccount = swf.Spec.Workflow.Spec.ServiceAccountName
+	//}
+	//modelJob := &model.Job{
+	//	UUID:               string(swf.UID),
+	//	DisplayName:        job.Name,
+	//	Name:               swf.Name,
+	//	Namespace:          swf.Namespace,
+	//	ServiceAccount:     serviceAccount,
+	//	Description:        job.Description,
+	//	Conditions:         swf.ConditionSummary(),
+	//	Enabled:            job.Enabled,
+	//	Trigger:            toModelTrigger(job.Trigger),
+	//	MaxConcurrency:     job.MaxConcurrency,
+	//	NoCatchup:          job.NoCatchup,
+	//	ResourceReferences: resourceReferences,
+	//	PipelineSpec: model.PipelineSpec{
+	//		PipelineId:   job.GetPipelineSpec().GetPipelineId(),
+	//		PipelineName: pipelineName,
+	//	}}
+	//
+	//if templateType == template.V1 {
+	//	params, err := apiParametersToModelParameters(job.GetPipelineSpec().GetParameters())
+	//	if err != nil {
+	//		return nil, util.Wrap(err, "Unable to parse the parameter.")
+	//	}
+	//	modelJob.Parameters = params
+	//	modelJob.WorkflowSpecManifest = manifest
+	//	return modelJob, nil
+	//
+	//} else if templateType == template.V2 {
+	//	params, err := runtimeConfigToModelParameters(job.GetPipelineSpec().GetRuntimeConfig())
+	//	if err != nil {
+	//		return nil, util.Wrap(err, "Unable to parse the parameter.")
+	//	}
+	//	modelJob.Parameters = params
+	//	modelJob.PipelineSpecManifest = manifest
+	//	return modelJob, nil
+	//
+	//} else {
+	//	return nil, fmt.Errorf("failed to generate ModelJob with templateType %s", templateType)
+	//}
+	return nil, nil
 }
 
 func (r *ResourceManager) ToModelPipelineVersion(version *api.PipelineVersion) (*model.PipelineVersion, error) {
@@ -283,37 +280,68 @@ func runtimeConfigToModelParameters(runtimeConfig *api.PipelineSpec_RuntimeConfi
 	}
 	return string(paramsBytes), nil
 }
-
 func (r *ResourceManager) toModelResourceReferences(
-	resourceId string, resourceType model.ResourceType, apiRefs []*api.ResourceReference) ([]*model.ResourceReference, error) {
+	resourceId string, resourceType model.ResourceType, experimentId string, pipelineVersionId string) ([]*model.ResourceReference, error) {
 	var modelRefs []*model.ResourceReference
-	for _, apiRef := range apiRefs {
-		modelReferenceType, err := common.ToModelResourceType(apiRef.Key.Type)
-		if err != nil {
-			return nil, util.Wrap(err, "Failed to convert reference type")
-		}
-		modelRelationship, err := common.ToModelRelationship(apiRef.Relationship)
-		if err != nil {
-			return nil, util.Wrap(err, "Failed to convert relationship")
-		}
-		referenceName, err := r.getResourceName(modelReferenceType, apiRef.Key.Id)
-		if err != nil {
-			return nil, util.Wrap(err, "Failed to find the referred resource")
-		}
-
-		//TODO(gaoning777) further investigation: Is the plain namespace a good option?  maybe uuid for distinctness even with namespace deletion/recreation.
-		modelRef := &model.ResourceReference{
-			ResourceUUID:  resourceId,
-			ResourceType:  resourceType,
-			ReferenceUUID: apiRef.Key.Id,
-			ReferenceName: referenceName,
-			ReferenceType: modelReferenceType,
-			Relationship:  modelRelationship,
-		}
-		modelRefs = append(modelRefs, modelRef)
+	experimentRefName, err := r.getResourceName(common.Experiment, experimentId)
+	if err != nil {
+		return nil, util.Wrap(err, "Failed to find the referred resource")
 	}
+	pipelineVersionRefName, err := r.getResourceName(common.PipelineVersion, pipelineVersionId)
+	if err != nil {
+		return nil, util.Wrap(err, "Failed to find the referred resource")
+	}
+
+	//TODO(gaoning777) further investigation: Is the plain namespace a good option?  maybe uuid for distinctness even with namespace deletion/recreation.
+	modelRefs = append(modelRefs, &model.ResourceReference{
+		ResourceUUID:  resourceId,
+		ResourceType:  resourceType,
+		ReferenceUUID: experimentId,
+		ReferenceName: experimentRefName,
+		ReferenceType: common.Experiment,
+		Relationship:  common.Owner, //one should be Creator ! double check it !!!
+	})
+	modelRefs = append(modelRefs, &model.ResourceReference{
+		ResourceUUID:  resourceId,
+		ResourceType:  resourceType,
+		ReferenceUUID: pipelineVersionId,
+		ReferenceName: pipelineVersionRefName,
+		ReferenceType: common.PipelineVersion,
+		Relationship:  common.Owner,
+	})
 	return modelRefs, nil
 }
+
+//func (r *ResourceManager) toModelResourceReferences(
+//	resourceId string, resourceType model.ResourceType, apiRefs []*api.ResourceReference) ([]*model.ResourceReference, error) {
+//	var modelRefs []*model.ResourceReference
+//	for _, apiRef := range apiRefs {
+//		modelReferenceType, err := common.ToModelResourceType(apiRef.Key.Type)
+//		if err != nil {
+//			return nil, util.Wrap(err, "Failed to convert reference type")
+//		}
+//		modelRelationship, err := common.ToModelRelationship(apiRef.Relationship)
+//		if err != nil {
+//			return nil, util.Wrap(err, "Failed to convert relationship")
+//		}
+//		referenceName, err := r.getResourceName(modelReferenceType, apiRef.Key.Id)
+//		if err != nil {
+//			return nil, util.Wrap(err, "Failed to find the referred resource")
+//		}
+//
+//		//TODO(gaoning777) further investigation: Is the plain namespace a good option?  maybe uuid for distinctness even with namespace deletion/recreation.
+//		modelRef := &model.ResourceReference{
+//			ResourceUUID:  resourceId,
+//			ResourceType:  resourceType,
+//			ReferenceUUID: apiRef.Key.Id,
+//			ReferenceName: referenceName,
+//			ReferenceType: modelReferenceType,
+//			Relationship:  modelRelationship,
+//		}
+//		modelRefs = append(modelRefs, modelRef)
+//	}
+//	return modelRefs, nil
+//}
 
 func (r *ResourceManager) getResourceName(resourceType model.ResourceType, resourceId string) (string, error) {
 	switch resourceType {
@@ -352,19 +380,4 @@ func (r *ResourceManager) getResourceName(resourceType model.ResourceType, resou
 	default:
 		return "", util.NewInvalidInputError("Unsupported resource type: %s", string(resourceType))
 	}
-}
-
-func (r *ResourceManager) getOwningExperimentUUID(references []*api.ResourceReference) (string, error) {
-	var experimentUUID string
-	for _, ref := range references {
-		if ref.Key.Type == api.ResourceType_EXPERIMENT && ref.Relationship == api.Relationship_OWNER {
-			experimentUUID = ref.Key.Id
-			break
-		}
-	}
-
-	if experimentUUID == "" {
-		return "", util.NewInternalServerError(nil, "Missing owning experiment UUID")
-	}
-	return experimentUUID, nil
 }

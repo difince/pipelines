@@ -174,6 +174,7 @@ func toApiRun(run *model.Run) *api.Run {
 		ScheduledAt:    &timestamp.Timestamp{Seconds: run.ScheduledAtInSec},
 		FinishedAt:     &timestamp.Timestamp{Seconds: run.FinishedAtInSec},
 		Status:         run.Conditions,
+		ExperimentId:   run.ExperimentUUID,
 		PipelineSpec: &api.PipelineSpec{
 			PipelineId:       run.PipelineId,
 			PipelineName:     run.PipelineName,

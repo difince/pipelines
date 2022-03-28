@@ -80,6 +80,11 @@ type ListRunsParams struct {
 
 	*/
 	Filter *string
+	/*Namespace
+	  [optional] Namespace to filter on.
+
+	*/
+	Namespace *string
 	/*PageSize
 	  The number of runs to be listed per page. If there are more runs than this
 	number, the response message will contain a nextPageToken field you can use
@@ -160,6 +165,17 @@ func (o *ListRunsParams) SetFilter(filter *string) {
 	o.Filter = filter
 }
 
+// WithNamespace adds the namespace to the list runs params
+func (o *ListRunsParams) WithNamespace(namespace *string) *ListRunsParams {
+	o.SetNamespace(namespace)
+	return o
+}
+
+// SetNamespace adds the namespace to the list runs params
+func (o *ListRunsParams) SetNamespace(namespace *string) {
+	o.Namespace = namespace
+}
+
 // WithPageSize adds the pageSize to the list runs params
 func (o *ListRunsParams) WithPageSize(pageSize *int32) *ListRunsParams {
 	o.SetPageSize(pageSize)
@@ -233,6 +249,22 @@ func (o *ListRunsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Regi
 		qFilter := qrFilter
 		if qFilter != "" {
 			if err := r.SetQueryParam("filter", qFilter); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	if o.Namespace != nil {
+
+		// query param namespace
+		var qrNamespace string
+		if o.Namespace != nil {
+			qrNamespace = *o.Namespace
+		}
+		qNamespace := qrNamespace
+		if qNamespace != "" {
+			if err := r.SetQueryParam("namespace", qNamespace); err != nil {
 				return err
 			}
 		}
