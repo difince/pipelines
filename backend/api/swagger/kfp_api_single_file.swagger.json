@@ -1008,43 +1008,6 @@
         "tags": [
           "PipelineService"
         ]
-      },
-      "delete": {
-        "summary": "Delete a pipeline by Name (and namespace)",
-        "operationId": "DeletePipelineByName",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "properties": {}
-            }
-          },
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/apiStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "description": "The Namespace the pipeline belongs to.\nIn the case of shared pipelines and KFPipeline standalone installation,\nthe pipeline name is the only needed field for unique resource lookup..\nIn those cases, please provide a hyphen (dash character, \"-\") for the namespace.",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "name",
-            "description": "The Name of the pipeline to be deleted.",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "PipelineService"
-        ]
       }
     },
     "/apis/v1beta1/pipeline_versions": {
@@ -1451,6 +1414,38 @@
           {
             "name": "version_id",
             "description": "The ID of the default version.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PipelineService"
+        ]
+      }
+    },
+    "/pipelines/apis/v1beta1/pipelines/{id}": {
+      "delete": {
+        "summary": "Deletes a pipeline and its pipeline versions.",
+        "operationId": "DeletePipeline",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "The ID of the pipeline to be deleted.",
             "in": "path",
             "required": true,
             "type": "string"

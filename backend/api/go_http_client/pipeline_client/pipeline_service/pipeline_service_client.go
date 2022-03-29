@@ -83,23 +83,23 @@ func (a *Client) CreatePipelineVersion(params *CreatePipelineVersionParams, auth
 }
 
 /*
-DeletePipelineByName deletes a pipeline by name and namespace
+DeletePipeline deletes a pipeline and its pipeline versions
 */
-func (a *Client) DeletePipelineByName(params *DeletePipelineByNameParams, authInfo runtime.ClientAuthInfoWriter) (*DeletePipelineByNameOK, error) {
+func (a *Client) DeletePipeline(params *DeletePipelineParams, authInfo runtime.ClientAuthInfoWriter) (*DeletePipelineOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewDeletePipelineByNameParams()
+		params = NewDeletePipelineParams()
 	}
 
 	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "DeletePipelineByName",
+		ID:                 "DeletePipeline",
 		Method:             "DELETE",
-		PathPattern:        "/apis/v1beta1/namespaces/{namespace}/pipelines/{name}",
+		PathPattern:        "/pipelines/apis/v1beta1/pipelines/{id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http", "https"},
 		Params:             params,
-		Reader:             &DeletePipelineByNameReader{formats: a.formats},
+		Reader:             &DeletePipelineReader{formats: a.formats},
 		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
@@ -107,7 +107,7 @@ func (a *Client) DeletePipelineByName(params *DeletePipelineByNameParams, authIn
 	if err != nil {
 		return nil, err
 	}
-	return result.(*DeletePipelineByNameOK), nil
+	return result.(*DeletePipelineOK), nil
 
 }
 

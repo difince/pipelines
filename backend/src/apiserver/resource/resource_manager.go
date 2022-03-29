@@ -254,10 +254,6 @@ func (r *ResourceManager) DeletePipeline(pipelineId string) error {
 	return nil
 }
 
-func (r *ResourceManager) DeletePipelineByNameAndNamespace(name string, namespace string) error {
-	return r.pipelineStore.DeletePipelineByNameAndNamespace(name, namespace)
-}
-
 func (r *ResourceManager) UpdatePipelineDefaultVersion(pipelineId string, versionId string) error {
 	return r.pipelineStore.UpdatePipelineDefaultVersion(pipelineId, versionId)
 }
