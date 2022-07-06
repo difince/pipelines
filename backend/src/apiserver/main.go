@@ -34,9 +34,11 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	api "github.com/kubeflow/pipelines/backend/api/go_client"
+	apiv2beta1 "github.com/kubeflow/pipelines/backend/api/v2beta1/go_client"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/common"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/resource"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/server"
+	server_v2beta1 "github.com/kubeflow/pipelines/backend/src/apiserver/server/v2beta1"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -93,6 +95,7 @@ func startRpcServer(resourceManager *resource.ResourceManager) {
 		glog.Fatalf("Failed to start RPC server: %v", err)
 	}
 	s := grpc.NewServer(grpc.UnaryInterceptor(apiServerInterceptor), grpc.MaxRecvMsgSize(math.MaxInt32))
+	//register apis/v1beta1
 	api.RegisterPipelineServiceServer(s, server.NewPipelineServer(resourceManager, &server.PipelineServerOptions{CollectMetrics: *collectMetricsFlag}))
 	api.RegisterExperimentServiceServer(s, server.NewExperimentServer(resourceManager, &server.ExperimentServerOptions{CollectMetrics: *collectMetricsFlag}))
 	api.RegisterRunServiceServer(s, server.NewRunServer(resourceManager, &server.RunServerOptions{CollectMetrics: *collectMetricsFlag}))
@@ -107,6 +110,9 @@ func startRpcServer(resourceManager *resource.ResourceManager) {
 			common.GetStringConfig(visualizationServicePort),
 		))
 	api.RegisterAuthServiceServer(s, server.NewAuthServer(resourceManager))
+
+	//register v2beta1
+	apiv2beta1.RegisterExperimentServiceServer(s, &server_v2beta1.ExperimentServer{})
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
@@ -156,6 +162,9 @@ func startHttpProxy(resourceManager *resource.ResourceManager) {
 
 	// Register a handler for Prometheus to poll.
 	topMux.Handle("/metrics", promhttp.Handler())
+	//TODO Check ServiceName
+	//register apis.v2beta1
+	registerHttpHandlerFromEndpoint(apiv2beta1.RegisterExperimentServiceHandlerFromEndpoint, "ExperimentService", ctx, runtimeMux)
 
 	http.ListenAndServe(*httpPortFlag, topMux)
 	glog.Info("Http Proxy started")

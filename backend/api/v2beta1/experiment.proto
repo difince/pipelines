@@ -1,4 +1,4 @@
-// Copyright 2018 The Kubeflow Authors
+// Copyright 2022 The Kubeflow Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
 syntax = "proto3";
 
 option go_package = "github.com/kubeflow/pipelines/backend/api/go_client";
-package api;
+package api.v2beta1;
 
-import "backend/api/error.proto";
-import "backend/api/resource_reference.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-swagger/options/annotations.proto";
+//import "backend/api/v2beta1/job.proto";
+//import "backend/api/v2beta1/run.proto";
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
   responses: {
@@ -30,7 +30,7 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     value: {
       schema: {
         json_schema: {
-          ref: ".api.Status";
+          ref: ".api.v2beta1.Status";
         }
       }
     }
@@ -62,29 +62,22 @@ service ExperimentService {
   // Creates a new experiment.
   rpc CreateExperiment(CreateExperimentRequest) returns (Experiment) {
     option (google.api.http) = {
-      post: "/apis/v1beta1/experiments"
+      post: "/apis/v2beta1/experiments"
       body: "experiment"
     };
   }
-// TODO To consider this option
-//  rpc CreateExperimentV2(CreateExperimentRequest) returns (Experiment) {
-//    option (google.api.http) = {
-//      post: "/apis/v2beta1/experiments"
-//      body: "experiment"
-//    };
-//  }
 
   // Finds a specific experiment by ID.
   rpc GetExperiment(GetExperimentRequest) returns (Experiment) {
     option (google.api.http) = {
-      get: "/apis/v1beta1/experiments/{id}"
+      get: "/apis/v2beta1/experiments/{id}"
     };
   }
 
   // Finds all experiments. Supports pagination, and sorting on certain fields.
   rpc ListExperiment(ListExperimentsRequest) returns (ListExperimentsResponse) {
     option (google.api.http) = {
-      get: "/apis/v1beta1/experiments"
+      get: "/apis/v2beta1/experiments"
     };
   }
 
@@ -93,14 +86,14 @@ service ExperimentService {
   // deleting the experiment.
   rpc DeleteExperiment(DeleteExperimentRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/apis/v1beta1/experiments/{id}"
+      delete: "/apis/v2beta1/experiments/{id}"
     };
   }
 
   // Archives an experiment and the experiment's runs and jobs.
   rpc ArchiveExperiment(ArchiveExperimentRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/apis/v1beta1/experiments/{id}:archive"
+      post: "/apis/v2beta1/experiments/{id}:archive"
     };
   }
 
@@ -108,9 +101,32 @@ service ExperimentService {
   // will stay archived.
   rpc UnarchiveExperiment(UnarchiveExperimentRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/apis/v1beta1/experiments/{id}:unarchive"
+      post: "/apis/v2beta1/experiments/{id}:unarchive"
     };
   }
+
+  // Finds all runs in an experiment specified by id.
+//  rpc GetRuns(ListRunsRequest) returns (ListRunsResponse) {
+//    option (google.api.http) = {
+//      get: "/apis/v2beta1/experiments/{experimentId}/runs"
+//    };
+//  }
+//
+//  // Finds all jobs in an experiment specified by id.
+//  rpc GetJobs(ListJobsRequest) returns (ListJobsResponse) {
+//  option (google.api.http) = {
+//    get: "/apis/v2beta1/experiments/{experimentId}/jobs"
+//    };
+//  }
+//
+//   Creates a new job in an experiment specified by id.
+//    rpc CreateJobs(CreateJobRequest) returns (Job) {
+//      option (google.api.http) = {
+//        post: "/apis/v2beta1/experiments/{experimentId}/jobs"
+//        body: "job"
+//      };
+//    }
+
 }
 
 message CreateExperimentRequest {
@@ -145,7 +161,11 @@ message ListExperimentsRequest {
   // What resource reference to filter on.
   // For Experiment, the only valid resource type is Namespace. An sample query string could be
   // resource_reference_key.type=NAMESPACE&resource_reference_key.id=ns1
-  ResourceKey resource_reference_key = 5;
+  // ResourceKey resource_reference_key = 5;
+
+  // Filter the experiments by the namespace provided.
+  // Mandatory field when multi-user mode is enables and forbidden field when multi-user mode is disabled.
+  string namespace = 5;
 }
 
 message ListExperimentsResponse {
@@ -179,7 +199,10 @@ message Experiment {
 
   // Optional input field. Specify which resource this run belongs to.
   // For Experiment, the only valid resource reference is a single Namespace.
-  repeated ResourceReference resource_references = 5;
+  // repeated ResourceReference resource_references = 5;
+
+  // Optional input field. Specify the namespace this experiment belongs to.
+  string namespace = 5;
 
   enum StorageState {
     STORAGESTATE_UNSPECIFIED = 0;
