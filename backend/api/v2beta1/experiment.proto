@@ -14,15 +14,13 @@
 
 syntax = "proto3";
 
-option go_package = "github.com/kubeflow/pipelines/backend/api/go_client";
+option go_package = "github.com/kubeflow/pipelines/backend/api/v2beta1/go_client";
 package api.v2beta1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-swagger/options/annotations.proto";
-//import "backend/api/v2beta1/job.proto";
-//import "backend/api/v2beta1/run.proto";
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
   responses: {
@@ -104,29 +102,6 @@ service ExperimentService {
       post: "/apis/v2beta1/experiments/{id}:unarchive"
     };
   }
-
-  // Finds all runs in an experiment specified by id.
-//  rpc GetRuns(ListRunsRequest) returns (ListRunsResponse) {
-//    option (google.api.http) = {
-//      get: "/apis/v2beta1/experiments/{experimentId}/runs"
-//    };
-//  }
-//
-//  // Finds all jobs in an experiment specified by id.
-//  rpc GetJobs(ListJobsRequest) returns (ListJobsResponse) {
-//  option (google.api.http) = {
-//    get: "/apis/v2beta1/experiments/{experimentId}/jobs"
-//    };
-//  }
-//
-//   Creates a new job in an experiment specified by id.
-//    rpc CreateJobs(CreateJobRequest) returns (Job) {
-//      option (google.api.http) = {
-//        post: "/apis/v2beta1/experiments/{experimentId}/jobs"
-//        body: "job"
-//      };
-//    }
-
 }
 
 message CreateExperimentRequest {
@@ -158,13 +133,8 @@ message ListExperimentsRequest {
   // [filter.proto](https://github.com/kubeflow/pipelines/blob/master/backend/api/filter.proto)).
   string filter = 4;
 
-  // What resource reference to filter on.
-  // For Experiment, the only valid resource type is Namespace. An sample query string could be
-  // resource_reference_key.type=NAMESPACE&resource_reference_key.id=ns1
-  // ResourceKey resource_reference_key = 5;
-
   // Filter the experiments by the namespace provided.
-  // Mandatory field when multi-user mode is enables and forbidden field when multi-user mode is disabled.
+  // Mandatory field when multi-user mode is enables and forbidden when multi-user mode is disabled.
   string namespace = 5;
 }
 
@@ -196,10 +166,6 @@ message Experiment {
 
   // Output. The time that the experiment created.
   google.protobuf.Timestamp created_at = 4;
-
-  // Optional input field. Specify which resource this run belongs to.
-  // For Experiment, the only valid resource reference is a single Namespace.
-  // repeated ResourceReference resource_references = 5;
 
   // Optional input field. Specify the namespace this experiment belongs to.
   string namespace = 5;

@@ -70,7 +70,7 @@ type ListExperimentParams struct {
 	Filter *string
 	/*Namespace
 	  Filter the experiments by the namespace provided.
-	Mandatory field when multi-user mode is enables and forbidden field when multi-user mode is disabled.
+	Mandatory field when multi-user mode is enables and forbidden when multi-user mode is disabled.
 
 	*/
 	Namespace *string

@@ -87,7 +87,7 @@ CreateExperimentDefault create experiment default
 type CreateExperimentDefault struct {
 	_statusCode int
 
-	Payload *experiment_model.V2beta1Status
+	Payload *experiment_model.Apiv2beta1Status
 }
 
 // Code gets the status code for the create experiment default response
@@ -101,7 +101,7 @@ func (o *CreateExperimentDefault) Error() string {
 
 func (o *CreateExperimentDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(experiment_model.V2beta1Status)
+	o.Payload = new(experiment_model.Apiv2beta1Status)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

@@ -14,7 +14,7 @@
 
 syntax = "proto3";
 
-option go_package = "github.com/kubeflow/pipelines/backend/api/go_client";
+option go_package = "github.com/kubeflow/pipelines/backend/api/v2beta1/go_client";
 package api.v2beta1;
 
 import "google/protobuf/any.proto";

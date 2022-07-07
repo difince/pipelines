@@ -29,7 +29,7 @@
           "default": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/v2beta1Status"
+              "$ref": "#/definitions/apiv2beta1Status"
             }
           }
         },
@@ -65,7 +65,7 @@
           },
           {
             "name": "namespace",
-            "description": "Filter the experiments by the namespace provided.\nMandatory field when multi-user mode is enables and forbidden field when multi-user mode is disabled.",
+            "description": "Filter the experiments by the namespace provided.\nMandatory field when multi-user mode is enables and forbidden when multi-user mode is disabled.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -88,7 +88,7 @@
           "default": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/v2beta1Status"
+              "$ref": "#/definitions/apiv2beta1Status"
             }
           }
         },
@@ -122,7 +122,7 @@
           "default": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/v2beta1Status"
+              "$ref": "#/definitions/apiv2beta1Status"
             }
           }
         },
@@ -152,7 +152,7 @@
           "default": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/v2beta1Status"
+              "$ref": "#/definitions/apiv2beta1Status"
             }
           }
         },
@@ -184,7 +184,7 @@
           "default": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/v2beta1Status"
+              "$ref": "#/definitions/apiv2beta1Status"
             }
           }
         },
@@ -216,7 +216,7 @@
           "default": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/v2beta1Status"
+              "$ref": "#/definitions/apiv2beta1Status"
             }
           }
         },
@@ -236,14 +236,23 @@
     }
   },
   "definitions": {
-    "ExperimentStorageState": {
-      "type": "string",
-      "enum": [
-        "STORAGESTATE_UNSPECIFIED",
-        "STORAGESTATE_AVAILABLE",
-        "STORAGESTATE_ARCHIVED"
-      ],
-      "default": "STORAGESTATE_UNSPECIFIED"
+    "apiv2beta1Status": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
     },
     "protobufAny": {
       "type": "object",
@@ -285,10 +294,19 @@
           "description": "Optional input field. Specify the namespace this experiment belongs to."
         },
         "storage_state": {
-          "$ref": "#/definitions/ExperimentStorageState",
+          "$ref": "#/definitions/v2beta1ExperimentStorageState",
           "description": "Output. Specifies whether this experiment is in archived or available state."
         }
       }
+    },
+    "v2beta1ExperimentStorageState": {
+      "type": "string",
+      "enum": [
+        "STORAGESTATE_UNSPECIFIED",
+        "STORAGESTATE_AVAILABLE",
+        "STORAGESTATE_ARCHIVED"
+      ],
+      "default": "STORAGESTATE_UNSPECIFIED"
     },
     "v2beta1ListExperimentsResponse": {
       "type": "object",
@@ -308,24 +326,6 @@
         "next_page_token": {
           "type": "string",
           "description": "The token to list the next page of experiments."
-        }
-      }
-    },
-    "v2beta1Status": {
-      "type": "object",
-      "properties": {
-        "error": {
-          "type": "string"
-        },
-        "code": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "details": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/protobufAny"
-          }
         }
       }
     }
