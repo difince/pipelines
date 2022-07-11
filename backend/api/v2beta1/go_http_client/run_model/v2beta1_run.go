@@ -54,7 +54,7 @@ type V2beta1Run struct {
 
 	// Required input field.
 	// Describing what the pipeline manifest and parameters to use for the run.
-	PipelineSpec *APIPipelineSpec `json:"pipeline_spec,omitempty"`
+	PipelineSpec *V2beta1PipelineSpec `json:"pipeline_spec,omitempty"`
 
 	// Optional field if workflowManifest or pipelineManifest are provided
 	// Required field if workflowManifest or pipelineManifest are not provided

@@ -59,7 +59,7 @@ type V2beta1Job struct {
 	// Required input field.
 	// Describing what the pipeline manifest and parameters to use
 	// for the scheduled job.
-	PipelineSpec *APIPipelineSpec `json:"pipeline_spec,omitempty"`
+	PipelineSpec *V2beta1PipelineSpec `json:"pipeline_spec,omitempty"`
 
 	// TODO Diana: Check out this option.
 	// Specify the pipeline version this job belongs to.

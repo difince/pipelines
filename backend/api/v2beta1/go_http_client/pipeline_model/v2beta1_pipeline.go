@@ -51,7 +51,7 @@ type V2beta1Pipeline struct {
 	// TODO(jingzhang36): replace this parameters field with the parameters field
 	// inside PipelineVersion when all usage of the former has been changed to use
 	// the latter.
-	Parameters []*Apiv2beta1Parameter `json:"parameters"`
+	Parameters []*V2beta1Parameter `json:"parameters"`
 
 	// The URL to the source of the pipeline. This is required when creating the
 	// pipeine through CreatePipeline API.

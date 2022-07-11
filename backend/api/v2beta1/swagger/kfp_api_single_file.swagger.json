@@ -1065,50 +1065,7 @@
       "default": "UNKNOWN_MODE",
       "description": "Required input.\n\n - DISABLED: The job won't schedule any run if disabled."
     },
-    "apiParameter": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "apiPipelineSpec": {
-      "type": "object",
-      "properties": {
-        "pipeline_id": {
-          "type": "string",
-          "description": "Optional input field. The ID of the pipeline user uploaded before."
-        },
-        "pipeline_name": {
-          "type": "string",
-          "description": "Optional output field. The name of the pipeline.\nNot empty if the pipeline id is not empty."
-        },
-        "workflow_manifest": {
-          "type": "string",
-          "description": "Optional input field. The marshalled raw argo JSON workflow.\nThis will be deprecated when pipeline_manifest is in use."
-        },
-        "pipeline_manifest": {
-          "type": "string",
-          "description": "Optional input field. The raw pipeline JSON spec."
-        },
-        "parameters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/apiParameter"
-          },
-          "title": "The parameter user provide to inject to the pipeline JSON.\nIf a default value of a parameter exist in the JSON,\nthe value user provided here will replace. V1 only"
-        },
-        "runtime_config": {
-          "$ref": "#/definitions/apiPipelineSpecRuntimeConfig",
-          "title": "Runtime config of the pipeline. V2 only"
-        }
-      }
-    },
-    "apiPipelineSpecRuntimeConfig": {
+    "PipelineSpecRuntimeConfig": {
       "type": "object",
       "properties": {
         "parameters": {
@@ -1169,7 +1126,7 @@
           "title": "Optional input field. Describing the purpose of the job"
         },
         "pipeline_spec": {
-          "$ref": "#/definitions/apiPipelineSpec",
+          "$ref": "#/definitions/v2beta1PipelineSpec",
           "description": "Required input field.\nDescribing what the pipeline manifest and parameters to use\nfor the scheduled job."
         },
         "experiment_id": {
@@ -1247,6 +1204,17 @@
         }
       }
     },
+    "v2beta1Parameter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "v2beta1PeriodicSchedule": {
       "type": "object",
       "properties": {
@@ -1268,6 +1236,38 @@
       },
       "title": "PeriodicSchedule allow scheduling the job periodically with certain interval"
     },
+    "v2beta1PipelineSpec": {
+      "type": "object",
+      "properties": {
+        "pipeline_id": {
+          "type": "string",
+          "description": "Optional input field. The ID of the pipeline user uploaded before."
+        },
+        "pipeline_name": {
+          "type": "string",
+          "description": "Optional output field. The name of the pipeline.\nNot empty if the pipeline id is not empty."
+        },
+        "workflow_manifest": {
+          "type": "string",
+          "description": "Optional input field. The marshalled raw argo JSON workflow.\nThis will be deprecated when pipeline_manifest is in use."
+        },
+        "pipeline_manifest": {
+          "type": "string",
+          "description": "Optional input field. The raw pipeline JSON spec."
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2beta1Parameter"
+          },
+          "title": "The parameter user provide to inject to the pipeline JSON.\nIf a default value of a parameter exist in the JSON,\nthe value user provided here will replace. V1 only"
+        },
+        "runtime_config": {
+          "$ref": "#/definitions/PipelineSpecRuntimeConfig",
+          "title": "Runtime config of the pipeline. V2 only"
+        }
+      }
+    },
     "v2beta1Trigger": {
       "type": "object",
       "properties": {
@@ -1279,17 +1279,6 @@
         }
       },
       "description": "Trigger defines what starts a pipeline run."
-    },
-    "apiv2beta1Parameter": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
     },
     "v2beta1GetTemplateResponse": {
       "type": "object",
@@ -1363,7 +1352,7 @@
         "parameters": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiv2beta1Parameter"
+            "$ref": "#/definitions/v2beta1Parameter"
           },
           "description": "Output. The input parameters for this pipeline.\nTODO(jingzhang36): replace this parameters field with the parameters field\ninside PipelineVersion when all usage of the former has been changed to use\nthe latter."
         },
@@ -1405,7 +1394,7 @@
         "parameters": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiv2beta1Parameter"
+            "$ref": "#/definitions/v2beta1Parameter"
           },
           "description": "Output. The input parameters for this pipeline."
         },
