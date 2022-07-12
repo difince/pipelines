@@ -2,11 +2,13 @@ package server
 
 import (
 	"context"
+	"strings"
+	
 	api "github.com/kubeflow/pipelines/backend/api/go_client"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/list"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/model"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/resource"
 	"github.com/kubeflow/pipelines/backend/src/common/util"
-	"strings"
 )
 
 type TaskServer struct {
@@ -69,7 +71,7 @@ func (s *TaskServer) validateCreateTaskRequest(request *api.CreateTaskRequest) e
 func (s *TaskServer) ListTasks(ctx context.Context, request *api.ListTasksRequest) (
 	*api.ListTasksResponse, error) {
 
-	opts, err := ValidatedListOptions(&model.Task{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
+	opts, err := list.ValidatedListOptions(&model.Task{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
 
 	if err != nil {
 		return nil, util.Wrap(err, "Failed to create list options")

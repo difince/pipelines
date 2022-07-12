@@ -16,6 +16,7 @@ package server
 
 import (
 	"context"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/list"
 	"net/http"
 	"net/url"
 	"path"
@@ -246,7 +247,7 @@ func (s *PipelineServer) ListPipelines(ctx context.Context, request *api.ListPip
 		}
 	}
 
-	opts, err := ValidatedListOptions(&model.Pipeline{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
+	opts, err := list.ValidatedListOptions(&model.Pipeline{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
 
 	if err != nil {
 		return nil, util.Wrap(err, "Failed to create list options")
@@ -385,7 +386,7 @@ func (s *PipelineServer) ListPipelineVersions(ctx context.Context, request *api.
 		listPipelineVersionRequests.Inc()
 	}
 
-	opts, err := ValidatedListOptions(
+	opts, err := list.ValidatedListOptions(
 		&model.PipelineVersion{},
 		request.PageToken,
 		int(request.PageSize),

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/list"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -13,7 +14,6 @@ import (
 	"github.com/kubeflow/pipelines/backend/src/apiserver/common"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/model"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/resource"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/server"
 	"github.com/kubeflow/pipelines/backend/src/common/util"
 )
 
@@ -47,7 +47,7 @@ func (s *RunServer) ListRuns(ctx context.Context, request *apiv2beta1.ListRunsRe
 		listRunRequests.Inc()
 	}
 
-	opts, err := server.ValidatedListOptions(&model.Run{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
+	opts, err := list.ValidatedListOptions(&model.Run{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
 	if err != nil {
 		return nil, util.Wrap(err, "Failed to create list options")
 	}
@@ -66,6 +66,7 @@ func (s *RunServer) ListRuns(ctx context.Context, request *apiv2beta1.ListRunsRe
 			return nil, util.Wrap(err, "Failed to authorize with namespace in experiment resource reference.")
 		}
 	}
+	//TODO add validation the experiment exists!
 	filterContext := &common.FilterContext{ReferenceKey: &common.ReferenceKey{Type: common.Experiment, ID: request.GetExperimentId()}}
 	runs, total_size, nextPageToken, err := s.resourceManager.ListRuns(filterContext, opts)
 	if err != nil {
