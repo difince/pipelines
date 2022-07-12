@@ -113,31 +113,6 @@
     }
   },
   "definitions": {
-    "apiResourceKey": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "$ref": "#/definitions/apiResourceType",
-          "description": "The type of the resource that referred to."
-        },
-        "id": {
-          "type": "string",
-          "description": "The ID of the resource that referred to."
-        }
-      }
-    },
-    "apiResourceType": {
-      "type": "string",
-      "enum": [
-        "UNKNOWN_RESOURCE_TYPE",
-        "EXPERIMENT",
-        "JOB",
-        "PIPELINE",
-        "PIPELINE_VERSION",
-        "NAMESPACE"
-      ],
-      "default": "UNKNOWN_RESOURCE_TYPE"
-    },
     "v2beta1ListTasksResponse": {
       "type": "object",
       "properties": {
@@ -158,6 +133,31 @@
           "description": "The total number of experiments for the given query."
         }
       }
+    },
+    "v2beta1ResourceKey": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/v2beta1ResourceType",
+          "description": "The type of the resource that referred to."
+        },
+        "id": {
+          "type": "string",
+          "description": "The ID of the resource that referred to."
+        }
+      }
+    },
+    "v2beta1ResourceType": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN_RESOURCE_TYPE",
+        "EXPERIMENT",
+        "JOB",
+        "PIPELINE",
+        "PIPELINE_VERSION",
+        "NAMESPACE"
+      ],
+      "default": "UNKNOWN_RESOURCE_TYPE"
     },
     "v2beta1Task": {
       "type": "object",

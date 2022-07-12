@@ -41,7 +41,7 @@ type V2beta1PipelineVersion struct {
 	PackageURL *V2beta1URL `json:"package_url,omitempty"`
 
 	// Output. The input parameters for this pipeline.
-	Parameters []*Apiv2beta1Parameter `json:"parameters"`
+	Parameters []*V2beta1Parameter `json:"parameters"`
 }
 
 // Validate validates this v2beta1 pipeline version

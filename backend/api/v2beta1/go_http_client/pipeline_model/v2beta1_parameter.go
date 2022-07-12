@@ -11,9 +11,9 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// Apiv2beta1Parameter apiv2beta1 parameter
-// swagger:model apiv2beta1Parameter
-type Apiv2beta1Parameter struct {
+// V2beta1Parameter v2beta1 parameter
+// swagger:model v2beta1Parameter
+type V2beta1Parameter struct {
 
 	// name
 	Name string `json:"name,omitempty"`
@@ -22,13 +22,13 @@ type Apiv2beta1Parameter struct {
 	Value string `json:"value,omitempty"`
 }
 
-// Validate validates this apiv2beta1 parameter
-func (m *Apiv2beta1Parameter) Validate(formats strfmt.Registry) error {
+// Validate validates this v2beta1 parameter
+func (m *V2beta1Parameter) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *Apiv2beta1Parameter) MarshalBinary() ([]byte, error) {
+func (m *V2beta1Parameter) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -36,8 +36,8 @@ func (m *Apiv2beta1Parameter) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *Apiv2beta1Parameter) UnmarshalBinary(b []byte) error {
-	var res Apiv2beta1Parameter
+func (m *V2beta1Parameter) UnmarshalBinary(b []byte) error {
+	var res V2beta1Parameter
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

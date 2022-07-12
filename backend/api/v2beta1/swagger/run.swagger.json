@@ -408,6 +408,23 @@
     }
   },
   "definitions": {
+    "PipelineSpecRuntimeConfig": {
+      "type": "object",
+      "properties": {
+        "parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          },
+          "description": "The runtime parameters of the PipelineSpec. The parameters will be\nused to replace the placeholders\nat runtime."
+        },
+        "pipeline_root": {
+          "type": "string",
+          "title": "A path in a object store bucket which will be treated as the root\noutput directory of the pipeline. It is used by the system to\ngenerate the paths of output artifacts. Ref:(https://www.kubeflow.org/docs/components/pipelines/pipeline-root/)"
+        }
+      },
+      "description": "The runtime config of a PipelineSpec."
+    },
     "ReportRunMetricsResponseReportRunMetricResult": {
       "type": "object",
       "properties": {
@@ -450,66 +467,6 @@
       ],
       "default": "UNSPECIFIED",
       "description": " - UNSPECIFIED: Default value if not present.\n - RAW: Display value as its raw format.\n - PERCENTAGE: Display value in percentage format."
-    },
-    "apiParameter": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "apiPipelineSpec": {
-      "type": "object",
-      "properties": {
-        "pipeline_id": {
-          "type": "string",
-          "description": "Optional input field. The ID of the pipeline user uploaded before."
-        },
-        "pipeline_name": {
-          "type": "string",
-          "description": "Optional output field. The name of the pipeline.\nNot empty if the pipeline id is not empty."
-        },
-        "workflow_manifest": {
-          "type": "string",
-          "description": "Optional input field. The marshalled raw argo JSON workflow.\nThis will be deprecated when pipeline_manifest is in use."
-        },
-        "pipeline_manifest": {
-          "type": "string",
-          "description": "Optional input field. The raw pipeline JSON spec."
-        },
-        "parameters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/apiParameter"
-          },
-          "title": "The parameter user provide to inject to the pipeline JSON.\nIf a default value of a parameter exist in the JSON,\nthe value user provided here will replace. V1 only"
-        },
-        "runtime_config": {
-          "$ref": "#/definitions/apiPipelineSpecRuntimeConfig",
-          "title": "Runtime config of the pipeline. V2 only"
-        }
-      }
-    },
-    "apiPipelineSpecRuntimeConfig": {
-      "type": "object",
-      "properties": {
-        "parameters": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object"
-          },
-          "description": "The runtime parameters of the PipelineSpec. The parameters will be\nused to replace the placeholders\nat runtime."
-        },
-        "pipeline_root": {
-          "type": "string",
-          "title": "A path in a object store bucket which will be treated as the root\noutput directory of the pipeline. It is used by the system to\ngenerate the paths of output artifacts. Ref:(https://www.kubeflow.org/docs/components/pipelines/pipeline-root/)"
-        }
-      },
-      "description": "The runtime config of a PipelineSpec."
     },
     "apiv2beta1Status": {
       "type": "object",
@@ -572,6 +529,17 @@
         }
       }
     },
+    "v2beta1Parameter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "v2beta1PipelineRuntime": {
       "type": "object",
       "properties": {
@@ -582,6 +550,38 @@
         "workflow_manifest": {
           "type": "string",
           "description": "Output. The runtime JSON manifest of the argo workflow.\nThis is deprecated after pipeline_runtime_manifest is in use."
+        }
+      }
+    },
+    "v2beta1PipelineSpec": {
+      "type": "object",
+      "properties": {
+        "pipeline_id": {
+          "type": "string",
+          "description": "Optional input field. The ID of the pipeline user uploaded before."
+        },
+        "pipeline_name": {
+          "type": "string",
+          "description": "Optional output field. The name of the pipeline.\nNot empty if the pipeline id is not empty."
+        },
+        "workflow_manifest": {
+          "type": "string",
+          "description": "Optional input field. The marshalled raw argo JSON workflow.\nThis will be deprecated when pipeline_manifest is in use."
+        },
+        "pipeline_manifest": {
+          "type": "string",
+          "description": "Optional input field. The raw pipeline JSON spec."
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2beta1Parameter"
+          },
+          "title": "The parameter user provide to inject to the pipeline JSON.\nIf a default value of a parameter exist in the JSON,\nthe value user provided here will replace. V1 only"
+        },
+        "runtime_config": {
+          "$ref": "#/definitions/PipelineSpecRuntimeConfig",
+          "title": "Runtime config of the pipeline. V2 only"
         }
       }
     },
@@ -642,7 +642,7 @@
           "title": "Optional input field. Describing the purpose of the run"
         },
         "pipeline_spec": {
-          "$ref": "#/definitions/apiPipelineSpec",
+          "$ref": "#/definitions/v2beta1PipelineSpec",
           "description": "Required input field.\nDescribing what the pipeline manifest and parameters to use for the run."
         },
         "experiment_id": {

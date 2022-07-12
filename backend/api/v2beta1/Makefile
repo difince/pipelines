@@ -26,7 +26,7 @@ generate: hack/generator.sh *.proto
 	docker run --interactive --rm \
 		--user $$(id -u):$$(id -g) \
 		--mount type=bind,source="$$(pwd)/../..",target=/go/src/github.com/kubeflow/pipelines \
-		$(PREBUILT_REMOTE_IMAGE) /go/src/github.com/kubeflow/pipelines/backend/api/hack/generator.sh
+		$(PREBUILT_REMOTE_IMAGE) /go/src/github.com/kubeflow/pipelines/backend/api/v2beta1/hack/generator.sh
 
 # Generate clients starting by building api-generator image locally.
 # Note, this should only be used for local development purposes. Once any change is made to the Dockerfile,

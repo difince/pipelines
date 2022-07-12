@@ -20,7 +20,7 @@ package api.v2beta1;
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
-import "backend/api/pipeline_spec.proto";
+import "backend/api/v2beta1/pipeline_spec.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {

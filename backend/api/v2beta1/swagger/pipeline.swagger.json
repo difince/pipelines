@@ -475,17 +475,6 @@
     }
   },
   "definitions": {
-    "apiv2beta1Parameter": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
     "apiv2beta1Status": {
       "type": "object",
       "properties": {
@@ -568,6 +557,17 @@
         }
       }
     },
+    "v2beta1Parameter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "v2beta1Pipeline": {
       "type": "object",
       "properties": {
@@ -591,7 +591,7 @@
         "parameters": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiv2beta1Parameter"
+            "$ref": "#/definitions/v2beta1Parameter"
           },
           "description": "Output. The input parameters for this pipeline.\nTODO(jingzhang36): replace this parameters field with the parameters field\ninside PipelineVersion when all usage of the former has been changed to use\nthe latter."
         },
@@ -633,7 +633,7 @@
         "parameters": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiv2beta1Parameter"
+            "$ref": "#/definitions/v2beta1Parameter"
           },
           "description": "Output. The input parameters for this pipeline."
         },
