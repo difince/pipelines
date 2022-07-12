@@ -121,7 +121,7 @@ func (s *ExperimentServer) ListExperiment(ctx context.Context, request *api.List
 		listExperimentRequests.Inc()
 	}
 
-	opts, err := validatedListOptions(&model.Experiment{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
+	opts, err := ValidatedListOptions(&model.Experiment{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
 
 	if err != nil {
 		return nil, util.Wrap(err, "Failed to create list options")
@@ -244,7 +244,7 @@ func (s *ExperimentServer) canAccessExperiment(ctx context.Context, experimentID
 	resourceAttributes.Version = common.RbacPipelinesVersion
 	resourceAttributes.Resource = common.RbacResourceTypeExperiments
 
-	err := isAuthorized(s.resourceManager, ctx, resourceAttributes)
+	err := IsAuthorized(s.resourceManager, ctx, resourceAttributes)
 	if err != nil {
 		return util.Wrap(err, "Failed to authorize with API resource references")
 	}

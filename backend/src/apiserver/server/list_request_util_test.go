@@ -213,7 +213,7 @@ func TestParseAPIFilter_DecodesEncodedString(t *testing.T) {
 	}
 
 	got, err := parseAPIFilter(in)
-	if !cmp.Equal(got, want, cmpopts.EquateEmpty(), protocmp.Transform(),) || err != nil {
+	if !cmp.Equal(got, want, cmpopts.EquateEmpty(), protocmp.Transform()) || err != nil {
 		t.Errorf("parseAPIString(%q) =\nGot %+v, %v\n Want %+v, <nil>\nDiff: %s",
 			in, got, err, want, cmp.Diff(want, got))
 	}
@@ -286,13 +286,13 @@ func TestValidatedListOptions_Errors(t *testing.T) {
 		t.Fatalf("opt.NextPageToken() = _, %+v; Want nil error", err)
 	}
 
-	_, err = validatedListOptions(&fakeListable{}, npt, 10, "name asc", "")
+	_, err = ValidatedListOptions(&fakeListable{}, npt, 10, "name asc", "")
 	if err != nil {
-		t.Fatalf("validatedListOptions(fakeListable, 10, \"name asc\") = _, %+v; Want nil error", err)
+		t.Fatalf("ValidatedListOptions(fakeListable, 10, \"name asc\") = _, %+v; Want nil error", err)
 	}
 
-	_, err = validatedListOptions(&fakeListable{}, npt, 10, "name desc", "")
+	_, err = ValidatedListOptions(&fakeListable{}, npt, 10, "name desc", "")
 	if err == nil {
-		t.Fatalf("validatedListOptions(fakeListable, 10, \"name desc\") = _, %+v; Want error", err)
+		t.Fatalf("ValidatedListOptions(fakeListable, 10, \"name desc\") = _, %+v; Want error", err)
 	}
 }

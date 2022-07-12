@@ -165,7 +165,7 @@ func (s *RunServer) ListRuns(ctx context.Context, request *api.ListRunsRequest) 
 		listRunRequests.Inc()
 	}
 
-	opts, err := validatedListOptions(&model.Run{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
+	opts, err := ValidatedListOptions(&model.Run{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
 	if err != nil {
 		return nil, util.Wrap(err, "Failed to create list options")
 	}
@@ -385,7 +385,7 @@ func (s *RunServer) canAccessRun(ctx context.Context, runId string, resourceAttr
 	resourceAttributes.Version = common.RbacPipelinesVersion
 	resourceAttributes.Resource = common.RbacResourceTypeRuns
 
-	err := isAuthorized(s.resourceManager, ctx, resourceAttributes)
+	err := IsAuthorized(s.resourceManager, ctx, resourceAttributes)
 	if err != nil {
 		return util.Wrap(err, "Failed to authorize with API resource references")
 	}

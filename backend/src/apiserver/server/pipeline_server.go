@@ -131,7 +131,7 @@ func (s *PipelineServer) CreatePipeline(ctx context.Context, request *api.Create
 		Verb:      common.RbacResourceVerbCreate,
 		Resource:  common.RbacResourceTypePipelines,
 	}
-	err = isAuthorized(s.resourceManager, ctx, resourceAttributes)
+	err = IsAuthorized(s.resourceManager, ctx, resourceAttributes)
 	if err != nil {
 		return nil, util.Wrap(err, "Failed to authorize with API resource references")
 	}
@@ -246,7 +246,7 @@ func (s *PipelineServer) ListPipelines(ctx context.Context, request *api.ListPip
 		}
 	}
 
-	opts, err := validatedListOptions(&model.Pipeline{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
+	opts, err := ValidatedListOptions(&model.Pipeline{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
 
 	if err != nil {
 		return nil, util.Wrap(err, "Failed to create list options")
@@ -385,7 +385,7 @@ func (s *PipelineServer) ListPipelineVersions(ctx context.Context, request *api.
 		listPipelineVersionRequests.Inc()
 	}
 
-	opts, err := validatedListOptions(
+	opts, err := ValidatedListOptions(
 		&model.PipelineVersion{},
 		request.PageToken,
 		int(request.PageSize),
@@ -516,7 +516,7 @@ func (s *PipelineServer) haveAccess(ctx context.Context, resourceAttributes *aut
 	resourceAttributes.Group = common.RbacPipelinesGroup
 	resourceAttributes.Version = common.RbacPipelinesVersion
 	resourceAttributes.Resource = common.RbacResourceTypePipelines
-	err := isAuthorized(s.resourceManager, ctx, resourceAttributes)
+	err := IsAuthorized(s.resourceManager, ctx, resourceAttributes)
 	if err != nil {
 		return util.Wrap(err, "Failed to authorize with API resource references")
 	}

@@ -153,7 +153,7 @@ func parseAPIFilter(encoded string) (*api.Filter, error) {
 	return f, nil
 }
 
-func validatedListOptions(listable list.Listable, pageToken string, pageSize int, sortBy string, filterSpec string) (*list.Options, error) {
+func ValidatedListOptions(listable list.Listable, pageToken string, pageSize int, sortBy string, filterSpec string) (*list.Options, error) {
 	defaultOpts := func() (*list.Options, error) {
 		if listable == nil {
 			return nil, util.NewInvalidInputError("Please specify a valid type to list. E.g., list runs or list jobs.")

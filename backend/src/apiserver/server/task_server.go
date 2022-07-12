@@ -69,7 +69,7 @@ func (s *TaskServer) validateCreateTaskRequest(request *api.CreateTaskRequest) e
 func (s *TaskServer) ListTasks(ctx context.Context, request *api.ListTasksRequest) (
 	*api.ListTasksResponse, error) {
 
-	opts, err := validatedListOptions(&model.Task{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
+	opts, err := ValidatedListOptions(&model.Task{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
 
 	if err != nil {
 		return nil, util.Wrap(err, "Failed to create list options")

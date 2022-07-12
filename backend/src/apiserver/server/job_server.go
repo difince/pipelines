@@ -146,7 +146,7 @@ func (s *JobServer) ListJobs(ctx context.Context, request *api.ListJobsRequest) 
 		listJobRequests.Inc()
 	}
 
-	opts, err := validatedListOptions(&model.Job{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
+	opts, err := ValidatedListOptions(&model.Job{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
 
 	if err != nil {
 		return nil, util.Wrap(err, "Failed to create list options")
@@ -317,7 +317,7 @@ func (s *JobServer) canAccessJob(ctx context.Context, jobID string, resourceAttr
 	resourceAttributes.Version = common.RbacPipelinesVersion
 	resourceAttributes.Resource = common.RbacResourceTypeJobs
 
-	err := isAuthorized(s.resourceManager, ctx, resourceAttributes)
+	err := IsAuthorized(s.resourceManager, ctx, resourceAttributes)
 	if err != nil {
 		return util.Wrap(err, "Failed to authorize with API resource references")
 	}

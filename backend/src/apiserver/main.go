@@ -112,7 +112,8 @@ func startRpcServer(resourceManager *resource.ResourceManager) {
 	api.RegisterAuthServiceServer(s, server.NewAuthServer(resourceManager))
 
 	//register v2beta1
-	apiv2beta1.RegisterExperimentServiceServer(s, &server_v2beta1.ExperimentServer{})
+	apiv2beta1.RegisterExperimentServiceServer(s, server_v2beta1.NewExperimentServer())
+	apiv2beta1.RegisterRunServiceServer(s, server_v2beta1.NewRunServer(resourceManager, &server_v2beta1.RunServerOptions{CollectMetrics: *collectMetricsFlag}))
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
@@ -165,6 +166,7 @@ func startHttpProxy(resourceManager *resource.ResourceManager) {
 	//TODO Check ServiceName
 	//register apis.v2beta1
 	registerHttpHandlerFromEndpoint(apiv2beta1.RegisterExperimentServiceHandlerFromEndpoint, "ExperimentService", ctx, runtimeMux)
+	registerHttpHandlerFromEndpoint(apiv2beta1.RegisterRunServiceHandlerFromEndpoint, "RunService", ctx, runtimeMux)
 
 	http.ListenAndServe(*httpPortFlag, topMux)
 	glog.Info("Http Proxy started")

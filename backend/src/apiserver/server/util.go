@@ -341,11 +341,11 @@ func getPipelineVersionIdFromResourceReferences(resourceManager *resource.Resour
 	return pipelineVersionId
 }
 
-// isAuthorized verifies whether the user identity, which is contained in the context object,
+// IsAuthorized verifies whether the user identity, which is contained in the context object,
 // can perform some action (verb) on a resource (resourceType/resourceName) living in the
 // target namespace. If the returned error is nil, the authorization passes. Otherwise,
 // authorization fails with a non-nil error.
-func isAuthorized(resourceManager *resource.ResourceManager, ctx context.Context, resourceAttributes *authorizationv1.ResourceAttributes) error {
+func IsAuthorized(resourceManager *resource.ResourceManager, ctx context.Context, resourceAttributes *authorizationv1.ResourceAttributes) error {
 	if common.IsMultiUserMode() == false {
 		// Skip authz if not multi-user mode.
 		return nil
