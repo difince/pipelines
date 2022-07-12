@@ -5,7 +5,6 @@ import (
 
 	apiv2beta1 "github.com/kubeflow/pipelines/backend/api/v2beta1/go_client"
 
-	"github.com/kubeflow/pipelines/backend/src/apiserver/common"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/model"
 	"github.com/kubeflow/pipelines/backend/src/common/util"
 )
@@ -84,46 +83,5 @@ func ToApiRunMetric(metric *model.RunMetric) *apiv2beta1.RunMetric {
 			NumberValue: metric.NumberValue,
 		},
 		Format: apiv2beta1.RunMetric_Format(apiv2beta1.RunMetric_Format_value[metric.Format]),
-	}
-}
-
-func toApiResourceReferences(references []*model.ResourceReference) []*apiv2beta1.ResourceReference {
-	var apiReferences []*apiv2beta1.ResourceReference
-	for _, ref := range references {
-		apiReferences = append(apiReferences, &apiv2beta1.ResourceReference{
-			Key: &apiv2beta1.ResourceKey{
-				Type: toApiResourceType(ref.ReferenceType),
-				Id:   ref.ReferenceUUID,
-			},
-			Name:         ref.ReferenceName,
-			Relationship: toApiRelationship(ref.Relationship),
-		})
-	}
-	return apiReferences
-}
-
-func toApiResourceType(modelType model.ResourceType) apiv2beta1.ResourceType {
-	switch modelType {
-	case common.Experiment:
-		return apiv2beta1.ResourceType_EXPERIMENT
-	case common.Job:
-		return apiv2beta1.ResourceType_JOB
-	case common.PipelineVersion:
-		return apiv2beta1.ResourceType_PIPELINE_VERSION
-	case common.Namespace:
-		return apiv2beta1.ResourceType_NAMESPACE
-	default:
-		return apiv2beta1.ResourceType_UNKNOWN_RESOURCE_TYPE
-	}
-}
-
-func toApiRelationship(r model.Relationship) apiv2beta1.Relationship {
-	switch r {
-	case common.Creator:
-		return apiv2beta1.Relationship_CREATOR
-	case common.Owner:
-		return apiv2beta1.Relationship_OWNER
-	default:
-		return apiv2beta1.Relationship_UNKNOWN_RELATIONSHIP
 	}
 }
