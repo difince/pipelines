@@ -1274,7 +1274,45 @@ func (r *ResourceManager) GetPipelineVersionTemplate(versionId string) ([]byte, 
 	return template, nil
 }
 
-func (r *ResourceManager) AuthenticateRequest(ctx context.Context) (string, error) {
+// Authorize verifies whether the user identity, which is contained in the context object,
+// can perform some action (verb) on a resource (resourceType/resourceName) living in the
+// target namespace. If the returned error is nil, the authorization passes. Otherwise,
+// authorization fails with a non-nil error.
+func (r *ResourceManager) IsAuthorized(ctx context.Context, resourceAttributes *authorizationv1.ResourceAttributes) error {
+	if common.IsMultiUserMode() == false {
+		// Skip authz if not multi-user mode.
+		return nil
+	}
+	if common.IsMultiUserSharedReadMode() &&
+		(resourceAttributes.Verb == common.RbacResourceVerbGet ||
+			resourceAttributes.Verb == common.RbacResourceVerbList) {
+		glog.Infof("Multi-user shared read mode is enabled. Request allowed: %+v", resourceAttributes)
+		return nil
+	}
+
+	glog.Info("Getting user identity...")
+	userIdentity, err := r.authenticateRequest(ctx)
+	if err != nil {
+		return err
+	}
+
+	if len(userIdentity) == 0 {
+		return util.NewUnauthenticatedError(errors.New("Request header error: user identity is empty."), "Request header error: user identity is empty.")
+	}
+
+	glog.Infof("User: %s, ResourceAttributes: %+v", userIdentity, resourceAttributes)
+	glog.Info("Authorizing request...")
+	err = r.IsRequestAuthorized(ctx, userIdentity, resourceAttributes)
+	if err != nil {
+		glog.Info(err.Error())
+		return err
+	}
+
+	glog.Infof("Authorized user '%s': %+v", userIdentity, resourceAttributes)
+	return nil
+}
+
+func (r *ResourceManager) authenticateRequest(ctx context.Context) (string, error) {
 	if ctx == nil {
 		return "", util.NewUnauthenticatedError(errors.New("Request error: context is nil"), "Request error: context is nil.")
 	}

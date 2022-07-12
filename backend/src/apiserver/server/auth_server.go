@@ -44,7 +44,7 @@ func (s *AuthServer) Authorize(ctx context.Context, request *api.AuthorizeReques
 		Subresource: "",
 		Name:        "",
 	}
-	err = IsAuthorized(s.resourceManager, ctx, resourceAttributes)
+	err = s.resourceManager.IsAuthorized(ctx, resourceAttributes)
 	if err != nil {
 		return nil, util.Wrap(err, "Failed to authorize the request")
 	}

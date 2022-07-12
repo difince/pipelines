@@ -385,7 +385,7 @@ func (s *RunServer) canAccessRun(ctx context.Context, runId string, resourceAttr
 	resourceAttributes.Version = common.RbacPipelinesVersion
 	resourceAttributes.Resource = common.RbacResourceTypeRuns
 
-	err := IsAuthorized(s.resourceManager, ctx, resourceAttributes)
+	err := s.resourceManager.IsAuthorized(ctx, resourceAttributes)
 	if err != nil {
 		return util.Wrap(err, "Failed to authorize with API resource references")
 	}

@@ -317,7 +317,7 @@ func (s *JobServer) canAccessJob(ctx context.Context, jobID string, resourceAttr
 	resourceAttributes.Version = common.RbacPipelinesVersion
 	resourceAttributes.Resource = common.RbacResourceTypeJobs
 
-	err := IsAuthorized(s.resourceManager, ctx, resourceAttributes)
+	err := s.resourceManager.IsAuthorized(ctx, resourceAttributes)
 	if err != nil {
 		return util.Wrap(err, "Failed to authorize with API resource references")
 	}

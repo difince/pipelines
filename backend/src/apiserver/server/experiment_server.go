@@ -244,7 +244,7 @@ func (s *ExperimentServer) canAccessExperiment(ctx context.Context, experimentID
 	resourceAttributes.Version = common.RbacPipelinesVersion
 	resourceAttributes.Resource = common.RbacResourceTypeExperiments
 
-	err := IsAuthorized(s.resourceManager, ctx, resourceAttributes)
+	err := s.resourceManager.IsAuthorized(ctx, resourceAttributes)
 	if err != nil {
 		return util.Wrap(err, "Failed to authorize with API resource references")
 	}
