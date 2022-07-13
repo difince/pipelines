@@ -52,13 +52,16 @@ func (s *RunServer) ListRuns(ctx context.Context, request *apiv2beta1.ListRunsRe
 		return nil, util.Wrap(err, "Failed to create list options")
 	}
 
+	experiment, err := s.resourceManager.GetExperiment(request.ExperimentId);
+	if err != nil {
+		return nil, util.Wrap(err, "Failed to get experiment.")
+	}
 	if common.IsMultiUserMode() {
-		namespace, err := s.resourceManager.GetNamespaceFromExperimentID(request.ExperimentId)
 		if err != nil {
 			return nil, util.Wrap(err, "Run's experiment has no namespace.")
 		}
 		resourceAttributes := &authorizationv1.ResourceAttributes{
-			Namespace: namespace,
+			Namespace: experiment.Namespace,
 			Verb:      common.RbacResourceVerbList,
 		}
 		err = s.canAccessRun(ctx, "", resourceAttributes)
