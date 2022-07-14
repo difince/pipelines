@@ -38,7 +38,7 @@ import (
 	"github.com/kubeflow/pipelines/backend/src/apiserver/common"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/resource"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/server"
-	server_v2beta1 "github.com/kubeflow/pipelines/backend/src/apiserver/server/v2beta1"
+	server_v2beta1 "github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/server"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
