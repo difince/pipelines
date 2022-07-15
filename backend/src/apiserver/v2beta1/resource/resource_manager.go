@@ -20,13 +20,13 @@ import (
 	"strconv"
 
 	apiv2beta1 "github.com/kubeflow/pipelines/backend/api/v2beta1/go_client"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/archive"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/archive"
 	kfpauth "github.com/kubeflow/pipelines/backend/src/apiserver/auth"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/client"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/common"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/list"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/model"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/storage"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/client"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/common"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/list"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/model"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/storage"
 	"github.com/kubeflow/pipelines/backend/src/common/util"
 	scheduledworkflowclient "github.com/kubeflow/pipelines/backend/src/crd/pkg/client/clientset/versioned/typed/scheduledworkflow/v1beta1"
 	"github.com/pkg/errors"
@@ -38,14 +38,9 @@ import (
 
 type ResourceManager struct {
 	experimentStore           storage.ExperimentStoreInterface
-	pipelineStore             storage.PipelineStoreInterface
 	jobStore                  storage.JobStoreInterface
-	runStore                  storage.RunStoreInterface
-	taskStore                 storage.TaskStoreInterface
 	resourceReferenceStore    storage.ResourceReferenceStoreInterface
-	dBStatusStore             storage.DBStatusStoreInterface
 	defaultExperimentStore    storage.DefaultExperimentStoreInterface
-	objectStore               storage.ObjectStoreInterface
 	argoClient                client.ArgoClientInterface
 	swfClient                 client.SwfClientInterface
 	k8sCoreClient             client.KubernetesCoreInterface

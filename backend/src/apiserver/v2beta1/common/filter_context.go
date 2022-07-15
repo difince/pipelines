@@ -1,4 +1,4 @@
-// Copyright 2022 The Kubeflow Authors
+// Copyright 2018 The Kubeflow Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package resource
+package common
 
-import (
-	apiv2beta1 "github.com/kubeflow/pipelines/backend/api/v2beta1/go_client"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/model"
-)
+import "github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/model"
 
-func (r *ResourceManager) ToModelExperiment(apiExperiment *apiv2beta1.Experiment) (*model.Experiment, error) {
-	return &model.Experiment{
-		Name:        apiExperiment.Name,
-		Description: apiExperiment.Description,
-		Namespace:   apiExperiment.Namespace,
-	}, nil
+type ReferenceKey struct {
+	Type model.ResourceType
+	ID   string
+}
+
+type FilterContext struct {
+	// Filter by a specific reference key
+	*ReferenceKey
 }

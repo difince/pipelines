@@ -19,9 +19,8 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 	apiv2beta1 "github.com/kubeflow/pipelines/backend/api/v2beta1/go_client"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/common"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/model"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/list"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/common"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/model"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/resource"
 	"github.com/kubeflow/pipelines/backend/src/common/util"
 	"github.com/pkg/errors"
@@ -136,7 +135,7 @@ func (s *ExperimentServer) ListExperiment(ctx context.Context, request *apiv2bet
 		listExperimentRequests.Inc()
 	}
 
-	opts, err := list.ValidatedListOptions(&model.Experiment{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
+	opts, err := validatedListOptions(&model.Experiment{}, request.PageToken, int(request.PageSize), request.SortBy, request.Filter)
 
 	if err != nil {
 		return nil, util.Wrap(err, "Failed to create list options")

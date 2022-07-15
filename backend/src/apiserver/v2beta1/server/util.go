@@ -18,7 +18,7 @@ import (
 	"context"
 
 	"github.com/golang/glog"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/common"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/common"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/resource"
 	"github.com/kubeflow/pipelines/backend/src/common/util"
 	"github.com/pkg/errors"

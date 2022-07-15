@@ -17,7 +17,7 @@ package server
 import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 	apiv2beta1 "github.com/kubeflow/pipelines/backend/api/v2beta1/go_client"
-	"github.com/kubeflow/pipelines/backend/src/apiserver/model"
+	"github.com/kubeflow/pipelines/backend/src/apiserver/v2beta1/model"
 )
 
 func ToApiExperiment(experiment *model.Experiment) *apiv2beta1.Experiment {
