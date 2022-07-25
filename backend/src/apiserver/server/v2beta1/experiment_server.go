@@ -67,7 +67,7 @@ type ExperimentServer struct {
 
 // CreateExperiment
 func (s *ExperimentServer) CreateExperiment(ctx context.Context, request *apiv2beta1.CreateExperimentRequest) (
-	*api.Experiment, error) {
+	*apiv2beta1.Experiment, error) {
 	if s.options.CollectMetrics {
 		createExperimentRequests.Inc()
 	}
@@ -95,6 +95,8 @@ func (s *ExperimentServer) CreateExperiment(ctx context.Context, request *apiv2b
 	if s.options.CollectMetrics {
 		experimentCount.Inc()
 	}
+
+	// ToApiExperiment needs change
 	return ToApiExperiment(newExperiment), nil
 }
 
