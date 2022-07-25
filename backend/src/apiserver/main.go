@@ -112,7 +112,9 @@ func startRpcServer(resourceManager *resource.ResourceManager) {
 	api.RegisterAuthServiceServer(s, server.NewAuthServer(resourceManager))
 
 	//register v2beta1
-	apiv2beta1.RegisterExperimentServiceServer(s, &server_v2beta1.ExperimentServer{})
+	apiv2beta1.RegisterExperimentServiceServer(s, server.NewExperimentServer(
+		resourceManager,
+		&server.ExperimentServerOptions{CollectMetrics: *collectMetricsFlag}))
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
