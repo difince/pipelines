@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option go_package = "github.com/kubeflow/pipelines/backend/api/go_client";
+package api;
+
+enum ExperimentStorageState {
+  STORAGESTATE_UNSPECIFIED = 0;
+  STORAGESTATE_AVAILABLE = 1;
+  STORAGESTATE_ARCHIVED = 2;
+}
