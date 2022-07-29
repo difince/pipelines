@@ -34,6 +34,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	api "github.com/kubeflow/pipelines/backend/api/go_client"
+	//apiv2beta1 "github.com/kubeflow/pipelines/backend/api/v2beta1/go_client"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/common"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/resource"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/server"
@@ -93,6 +94,7 @@ func startRpcServer(resourceManager *resource.ResourceManager) {
 		glog.Fatalf("Failed to start RPC server: %v", err)
 	}
 	s := grpc.NewServer(grpc.UnaryInterceptor(apiServerInterceptor), grpc.MaxRecvMsgSize(math.MaxInt32))
+	//register apis/v1beta1
 	api.RegisterPipelineServiceServer(s, server.NewPipelineServer(resourceManager, &server.PipelineServerOptions{CollectMetrics: *collectMetricsFlag}))
 	api.RegisterExperimentServiceServer(s, server.NewExperimentServer(resourceManager, &server.ExperimentServerOptions{CollectMetrics: *collectMetricsFlag}))
 	api.RegisterRunServiceServer(s, server.NewRunServer(resourceManager, &server.RunServerOptions{CollectMetrics: *collectMetricsFlag}))
@@ -107,6 +109,10 @@ func startRpcServer(resourceManager *resource.ResourceManager) {
 			common.GetStringConfig(visualizationServicePort),
 		))
 	api.RegisterAuthServiceServer(s, server.NewAuthServer(resourceManager))
+
+	//register v2beta1
+	//apiv2beta1.RegisterExperimentServiceServer(s, v2server.NewExperimentServer(resourceManager, &v2server.ExperimentServerOptions{CollectMetrics: *collectMetricsFlag}))
+	//apiv2beta1.RegisterAuthServiceServer(s, v2server.NewAuthServer(resourceManager))
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
@@ -147,6 +153,10 @@ func startHttpProxy(resourceManager *resource.ResourceManager) {
 		w.Header().Set("Content-Type", "application/json")
 		io.WriteString(w, `{"commit_sha":"`+common.GetStringConfigWithDefault("COMMIT_SHA", "unknown")+`", "tag_name":"`+common.GetStringConfigWithDefault("TAG_NAME", "unknown")+`", "multi_user":`+strconv.FormatBool(common.IsMultiUserMode())+`}`)
 	})
+
+	//Register v2beta1 services
+	//registerHttpHandlerFromEndpoint(apiv2beta1.RegisterExperimentServiceHandlerFromEndpoint, "ExperimentService", ctx, runtimeMux)
+	//registerHttpHandlerFromEndpoint(apiv2beta1.RegisterAuthServiceHandlerFromEndpoint, "AuthService", ctx, runtimeMux)
 
 	// log streaming is provided via HTTP.
 	runLogServer := server.NewRunLogServer(resourceManager)

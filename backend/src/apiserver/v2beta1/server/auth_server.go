@@ -2,14 +2,12 @@ package server
 
 import (
 	"context"
-	"strings"
-
+	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
 	commonapi "github.com/kubeflow/pipelines/backend/api/common/go_client"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/common"
 	"github.com/kubeflow/pipelines/backend/src/apiserver/resource"
 	"github.com/kubeflow/pipelines/backend/src/common/util"
-	authorizationv1 "k8s.io/api/authorization/v1"
 )
 
 var rbacResourceTypeToGroup = map[string]string{
@@ -27,27 +25,30 @@ type AuthServer struct {
 
 func (s *AuthServer) Authorize(ctx context.Context, request *commonapi.AuthorizeRequest) (
 	*empty.Empty, error) {
+	fmt.Println("v2: Authorize has been called")
 	err := ValidateAuthorizeRequest(request)
 	if err != nil {
 		return nil, util.Wrap(err, "Authorize request is not valid")
 	}
 
-	namespace := strings.ToLower(request.GetNamespace())
-	verb := strings.ToLower(request.GetVerb().String())
-	resource := strings.ToLower(request.GetResources().String())
-	resourceAttributes := &authorizationv1.ResourceAttributes{
-		Namespace:   namespace,
-		Verb:        verb,
-		Group:       rbacResourceTypeToGroup[resource],
-		Version:     common.RbacPipelinesVersion,
-		Resource:    resource,
-		Subresource: "",
-		Name:        "",
-	}
-	err = isAuthorized(s.resourceManager, ctx, resourceAttributes)
-	if err != nil {
-		return nil, util.Wrap(err, "Failed to authorize the request")
-	}
+	//TODO V2 isAuthorized need to be moved in a common folder.
+
+	//namespace := strings.ToLower(request.GetNamespace())
+	//verb := strings.ToLower(request.GetVerb().String())
+	//resource := strings.ToLower(request.GetResources().String())
+	//resourceAttributes := &authorizationv1.ResourceAttributes{
+	//	Namespace:   namespace,
+	//	Verb:        verb,
+	//	Group:       rbacResourceTypeToGroup[resource],
+	//	Version:     common.RbacPipelinesVersion,
+	//	Resource:    resource,
+	//	Subresource: "",
+	//	Name:        "",
+	//}
+	//err = isAuthorized(s.resourceManager, ctx, resourceAttributes)
+	//if err != nil {
+	//	return nil, util.Wrap(err, "Failed to authorize the request")
+	//}
 
 	return &empty.Empty{}, nil
 }
