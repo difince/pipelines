@@ -1,0 +1,40 @@
+// Copyright 2022 The Kubeflow Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+option go_package = "github.com/kubeflow/pipelines/backend/api/common/go_client";
+package api;
+
+
+// Ask for authorization of an access by providing resource's namespace, type
+// and verb. User identity is not part of the message, because it is expected
+// to be parsed from request headers. Caller should proxy user request's headers.
+message AuthorizeRequest {
+  // Type of resources in pipelines system.
+  enum Resources {
+    UNASSIGNED_RESOURCES = 0;
+    VIEWERS = 1;
+  }
+  // Type of verbs that act on the resources.
+  enum Verb {
+    UNASSIGNED_VERB = 0;
+    CREATE = 1;
+    GET = 2;
+    DELETE = 3;
+  }
+  string namespace = 1;    // Namespace the resource belongs to.
+  Resources resources = 2; // Resource type asking for authorization.
+  Verb verb = 3;           // Verb on the resource asking for authorization.
+}

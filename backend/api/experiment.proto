@@ -19,6 +19,7 @@ package api;
 
 import "backend/api/error.proto";
 import "backend/api/resource_reference.proto";
+import "backend/api/common/storage_states.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
@@ -174,14 +175,8 @@ message Experiment {
   // For Experiment, the only valid resource reference is a single Namespace.
   repeated ResourceReference resource_references = 5;
 
-  enum StorageState {
-    STORAGESTATE_UNSPECIFIED = 0;
-    STORAGESTATE_AVAILABLE = 1;
-    STORAGESTATE_ARCHIVED = 2;
-  }
-
   // Output. Specifies whether this experiment is in archived or available state.
-  StorageState storage_state = 6;
+  ExperimentStorageState storage_state = 6;
 }
 
 message ArchiveExperimentRequest {
