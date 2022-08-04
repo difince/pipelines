@@ -61,10 +61,18 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
 
 
 service RunService {
-  // Creates a new run.
-  rpc CreateRun(CreateRunRequest) returns (RunDetail) {
+  // Creates a new run in an experiment by experiment ID.
+  rpc CreateRunInExperiment(CreateRunRequestByExperimentID) returns (RunDetail) {
     option (google.api.http) = {
-      post: "/apis/v2beta1/runs"
+      post: "/apis/v2beta1/experiments/{experiment_id}/runs"
+      body: "run"
+    };
+  }
+
+  // Creates a new run in an experiment by experiment name.
+  rpc CreateRunInExperimentByName(CreateRunRequestByExperimentName) returns (RunDetail) {
+    option (google.api.http) = {
+      post: "/apis/v2beta1/experiments/names/{experiment_name}/runs"
       body: "run"
     };
   }
@@ -76,10 +84,24 @@ service RunService {
     };
   }
 
-  // Finds all runs.
+  // Finds all runs across all experiments.
   rpc ListRuns(ListRunsRequest) returns (ListRunsResponse) {
     option (google.api.http) = {
       get: "/apis/v2beta1/runs"
+    };
+  }
+
+  // Finds all runs of a specific experiment by experiment ID.
+  rpc ListRunsByExperiment(ListRunsRequestByExperimentID) returns (ListRunsResponse) {
+    option (google.api.http) = {
+      get: "/apis/v2beta1/experiments/{experiment_id}/runs"
+    };
+  }
+
+  // Finds all runs of a specific experiment by experiment name.
+  rpc ListRunsByExperimentName(ListRunsRequestByExperimentName) returns (ListRunsResponse) {
+    option (google.api.http) = {
+      get: "/apis/v2beta1/experiments/names/{experiment_name}/runs"
     };
   }
 
@@ -138,13 +160,37 @@ service RunService {
   }
 }
 
-message CreateRunRequest {
-  Run run = 1;
+message CreateRunRequestByExperimentID {
+  // The ID of the experiment to be retrieved.
+  string experiment_id = 1;
+
+  Run run = 2;
+}
+
+message CreateRunRequestByExperimentName {
+  // The name of the experiment to be retrieved.
+  string experiment_name = 1;
+
+  Run run = 2;
 }
 
 message GetRunRequest {
   // The ID of the run to be retrieved.
   string run_id = 1;
+}
+
+message ListRunsRequestByExperimentID {
+  // The ID of the experiment to be retrieved.
+  string experiment_id = 1;
+
+  ListRunsRequest request = 2;
+}
+
+message ListRunsRequestByExperimentName {
+  // The name of the experiment to be retrieved.
+  string experiment_name = 1;
+
+  ListRunsRequest request = 2;
 }
 
 message ListRunsRequest {
@@ -162,10 +208,8 @@ message ListRunsRequest {
   // (Example, "name asc" or "id desc"). Ascending by default.
   string sort_by = 3;
 
-  // What resource reference to filter on.
-  // E.g. If listing run for an experiment, the query string would be
-  // resource_reference_key.type=EXPERIMENT&resource_reference_key.id=123
-  ResourceKey resource_reference_key = 4;
+  // Optional input field. Filters based on the namespace.
+  string namespace = 4;
 
   // A url-encoded, JSON-serialized Filter protocol buffer (see
   // [filter.proto](https://github.com/kubeflow/pipelines/blob/master/backend/api/filter.proto)).
@@ -186,10 +230,10 @@ message ListRunsResponse {
   repeated Run runs = 1;
 
   // The total number of runs for the given query.
-  int32 total_size = 3;
+  int32 total_size = 2;
 
   // The token to list the next page of runs.
-  string next_page_token = 2;
+  string next_page_token = 3;
 }
 
 message ArchiveRunRequest {
@@ -215,14 +259,6 @@ message Run {
   // or auto generated if run is created by scheduled job. Not unique.
   string name = 2;
 
-  enum StorageState {
-    STORAGESTATE_AVAILABLE = 0;
-    STORAGESTATE_ARCHIVED = 1;
-  }
-
-  // Output. Specify whether this run is in archived or available mode.
-  StorageState storage_state = 10;
-
   // Optional input field. Describing the purpose of the run
   string description = 3;
 
@@ -230,29 +266,30 @@ message Run {
   // Describing what the pipeline manifest and parameters to use for the run.
   PipelineSpec pipeline_spec = 4;
 
-  // Optional input field. Specify which resource this run belongs to.
-  // When creating a run from a particular pipeline version, the pipeline
-  // version can be specified here.
-  repeated ResourceReference resource_references = 5;
-
   // Optional input field. Specify which Kubernetes service account this run uses.
-  string service_account = 14;
+  string service_account = 5;
+
+  // Optional input field. The Namespace the run belongs to. 
+  string namespace = 6;
+
+  // Optional input field. The pipeline version the run belongs to. 
+  string pipeline_version = 7;
 
   // Output. The time that the run created.
-  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp created_at = 8;
 
   // Output. When this run is scheduled to run. This could be different from
   // created_at. For example, if a run is from a backfilling job that was
   // supposed to run 2 month ago, the scheduled_at is 2 month ago,
   // v.s. created_at is the current time.
-  google.protobuf.Timestamp scheduled_at = 7;
+  google.protobuf.Timestamp scheduled_at = 9;
 
   // Output. The time this run is finished.
-  google.protobuf.Timestamp finished_at = 13;
+  google.protobuf.Timestamp finished_at = 10;
 
   // Output. The status of the run.
   // One of [Pending, Running, Succeeded, Skipped, Failed, Error]
-  string status = 8;
+  string status = 11;
 
   // In case any error happens retrieving a run field, only run ID
   // and the error message is returned. Client has the flexibility of choosing
@@ -261,18 +298,21 @@ message Run {
 
   // Output. The metrics of the run. The metrics are reported by ReportMetrics
   // API.
-  repeated RunMetric metrics = 9;
+  repeated RunMetric metrics = 13;
+
+  enum StorageState {
+    STORAGESTATE_AVAILABLE = 0;
+    STORAGESTATE_ARCHIVED = 1;
+  }
+
+  // Output. Specify whether this run is in archived or available mode.
+  StorageState storage_state = 14;
 }
-// Next field number of Run will be 15
 
 message PipelineRuntime {
   // Output. The runtime JSON manifest of the pipeline, including the status
   // of pipeline steps and fields need for UI visualization etc.
-  string pipeline_manifest = 10;
-
-  // Output. The runtime JSON manifest of the argo workflow.
-  // This is deprecated after pipeline_runtime_manifest is in use.
-  string workflow_manifest = 11;
+  string pipeline_manifest = 1;
 }
 
 message RunDetail {
