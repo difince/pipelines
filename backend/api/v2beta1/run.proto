@@ -80,7 +80,7 @@ service RunService {
   // Finds a specific run by ID.
   rpc GetRun(GetRunRequest) returns (RunDetail) {
     option (google.api.http) = {
-      get: "/apis/v2beta1/runs/{run_id}"
+      get: "/apis/v2beta1/runs/{id}"
     };
   }
 
@@ -133,7 +133,7 @@ service RunService {
   rpc ReportRunMetrics(ReportRunMetricsRequest)
       returns (ReportRunMetricsResponse) {
     option (google.api.http) = {
-      post: "/apis/v2beta1/runs/{run_id}:reportMetrics"
+      post: "/apis/v2beta1/runs/{id}:reportMetrics"
       body: "*"
     };
   }
@@ -148,14 +148,14 @@ service RunService {
   // Terminates an active run.
   rpc TerminateRun(TerminateRunRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/apis/v2beta1/runs/{run_id}/terminate"
+      post: "/apis/v2beta1/runs/{id}/terminate"
     };
   }
 
   // Re-initiates a failed or terminated run.
   rpc RetryRun(RetryRunRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/apis/v2beta1/runs/{run_id}/retry"
+      post: "/apis/v2beta1/runs/{id}/retry"
     };
   }
 }
@@ -176,7 +176,7 @@ message CreateRunRequestByExperimentName {
 
 message GetRunRequest {
   // The ID of the run to be retrieved.
-  string run_id = 1;
+  string id = 1;
 }
 
 message ListRunsRequestByExperimentID {
@@ -218,12 +218,12 @@ message ListRunsRequest {
 
 message TerminateRunRequest {
   // The ID of the run to be terminated.
-  string run_id = 1;
+  string id = 1;
 }
 
 message RetryRunRequest {
   // The ID of the run to be retried.
-  string run_id = 1;
+  string id = 1;
 }
 
 message ListRunsResponse {
@@ -351,7 +351,7 @@ message RunMetric {
 
 message ReportRunMetricsRequest {
   // Required. The parent run ID of the metric.
-  string run_id = 1;
+  string id = 1;
 
   // List of metrics to report.
   repeated RunMetric metrics = 2;
