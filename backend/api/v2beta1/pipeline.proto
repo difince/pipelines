@@ -324,8 +324,8 @@ message Pipeline {
   // can allow them to set default version.)
   PipelineVersion default_version = 7;
 
-  //  Optional input. If not provided, namespace is set to empty - covers standalone deployment and
-  //  in multi-user mode - "shared" pipelines.
+  // Optional input. If not provided, namespace is set to empty - covers standalone deployment and
+  // in multi-user mode,"shared" pipelines.
   string namespace = 8;
 
   // In case any error happens retrieving a pipeline field, only pipeline ID
