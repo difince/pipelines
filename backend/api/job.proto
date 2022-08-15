@@ -63,7 +63,7 @@ service JobService {
   // Creates a new job in an experiment, given the experiment ID.
   rpc CreateJobByExperiment(CreateJobByExperimentRequest) returns (Job) {
     option (google.api.http) = {
-      post: "/apis/v2beta1/experiments/{id}/jobs"
+      post: "/apis/v2beta1/experiments/{experiment_id}/jobs"
       body: "job"
     };
   }
