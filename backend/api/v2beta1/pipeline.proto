@@ -74,9 +74,7 @@ service PipelineService {
     };
   }
 
-  /*
-  Finds a pipeline by Name (and namespace)
-   */
+  //Finds a pipeline by Name (and namespace)
   rpc GetPipelineByName(GetPipelineByNameRequest) returns (Pipeline) {
     option (google.api.http) = {
       get: "/apis/v2beta1/pipelines/names/{name}"
@@ -90,17 +88,17 @@ service PipelineService {
     };
   }
 
-  // Deletes a pipeline and its pipeline versions.
-  rpc DeletePipeline(DeletePipelineRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      delete: "/apis/v2beta1/pipelines/{id}"
-    };
-  }
-
   // Returns a single YAML template that contains the description, parameters, and metadata associated with the pipeline provided.
   rpc GetTemplate(GetTemplateRequest) returns (GetTemplateResponse) {
     option (google.api.http) = {
       get: "/apis/v2beta1/pipelines/{id}/templates"
+    };
+  }
+
+  // Deletes a pipeline and its pipeline versions.
+  rpc DeletePipeline(DeletePipelineRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/apis/v2beta1/pipelines/{id}"
     };
   }
 
@@ -128,20 +126,6 @@ service PipelineService {
     };
   }
 
-  //TODO v2: Try to fix this! See https://github.com/kubeflow/pipelines/issues/7982
-  // Deletes a pipeline version by pipeline version ID. If the deleted pipeline
-  // version is the default pipeline version, the pipeline's default version
-  // changes to the pipeline's most recent pipeline version. If there are no
-  // remaining pipeline versions, the pipeline will have no default version.
-  // Examines the run_service_api.ipynb notebook to learn more about creating a
-  // run using a pipeline version (https://github.com/kubeflow/pipelines/blob/master/tools/benchmarks/run_service_api.ipynb).
-  rpc DeletePipelineVersion(DeletePipelineVersionRequest)
-      returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      delete: "/apis/v2beta1/pipeline_versions/{version_id}"
-    };
-  }
-
   // Returns a YAML template that contains the specified pipeline version's description, parameters and metadata.
   rpc GetPipelineVersionTemplate(GetPipelineVersionTemplateRequest) returns (GetTemplateResponse) {
     option (google.api.http) = {
@@ -154,6 +138,20 @@ service PipelineService {
     option (google.api.http) = {
       post: "/apis/v2beta1/pipelines/{pipeline_id}/default_version/{version_id}"
 
+    };
+  }
+
+  //TODO v2: Try to fix this! See https://github.com/kubeflow/pipelines/issues/7982
+  // Deletes a pipeline version by pipeline version ID. If the deleted pipeline
+  // version is the default pipeline version, the pipeline's default version
+  // changes to the pipeline's most recent pipeline version. If there are no
+  // remaining pipeline versions, the pipeline will have no default version.
+  // Examines the run_service_api.ipynb notebook to learn more about creating a
+  // run using a pipeline version (https://github.com/kubeflow/pipelines/blob/master/tools/benchmarks/run_service_api.ipynb).
+  rpc DeletePipelineVersion(DeletePipelineVersionRequest)
+      returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/apis/v2beta1/pipeline_versions/{version_id}"
     };
   }
 }
@@ -259,6 +257,7 @@ message GetPipelineVersionRequest {
 message ListPipelineVersionsRequest {
   // The pipeline whose versions are to be listed.
   string pipeline_id = 1;
+
   // The number of pipeline versions to be listed per page. If there are more
   // pipeline versions than this number, the response message will contain a
   // nextPageToken field you can use to fetch the next page.
@@ -272,6 +271,7 @@ message ListPipelineVersionsRequest {
   // Can be format of "field_name", "field_name asc" or "field_name desc"
   // Ascending by default.
   string sort_by = 4;
+
   // A base-64 encoded, JSON-serialized Filter protocol buffer (see
   // filter.proto).
   string filter = 5;
@@ -317,21 +317,22 @@ message Pipeline {
   // TODO(jingzhang36): replace this url field with the code_source_urls field
   // inside PipelineVersion when all usage of the former has been changed to use
   // the latter.
-  Url url = 7;
-
-  // In case any error happens retrieving a pipeline field, only pipeline ID
-  // and the error message is returned. Client has the flexibility of choosing
-  // how to handle error. This is especially useful during listing call.
-  string error = 6;
+  Url url = 6;
 
   // Output only. The default version of the pipeline. As of now, the latest
   // version is used as default. (In the future, if desired by customers, we
   // can allow them to set default version.)
-  PipelineVersion default_version = 8;
+  PipelineVersion default_version = 7;
 
   //  Optional input. If not provided, namespace is set to empty - covers standalone deployment and
   //  in multi-user mode - "shared" pipelines.
-  string namespace = 9;
+  string namespace = 8;
+
+  // In case any error happens retrieving a pipeline field, only pipeline ID
+  // and the error message is returned. Client has the flexibility of choosing
+  // how to handle error. This is especially useful during listing call.
+  string error = 9;
+
 }
 
 message PipelineVersion {
