@@ -57,6 +57,7 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
   }
 };
 
+
 service ExperimentService {
   // Creates a new experiment.
   rpc CreateExperiment(CreateExperimentRequest) returns (Experiment) {
@@ -80,15 +81,6 @@ service ExperimentService {
     };
   }
 
-  // Deletes an experiment without deleting the experiment's runs and jobs. To
-  // avoid unexpected behaviors, delete an experiment's runs and jobs before
-  // deleting the experiment.
-  rpc DeleteExperiment(DeleteExperimentRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      delete: "/apis/v2beta1/experiments/{id}"
-    };
-  }
-
   // Archives an experiment and the experiment's runs and jobs.
   rpc ArchiveExperiment(ArchiveExperimentRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
@@ -101,6 +93,15 @@ service ExperimentService {
   rpc UnarchiveExperiment(UnarchiveExperimentRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/apis/v2beta1/experiments/{id}:unarchive"
+    };
+  }
+
+  // Deletes an experiment without deleting the experiment's runs and jobs. To
+  // avoid unexpected behaviors, delete an experiment's runs and jobs before
+  // deleting the experiment.
+  rpc DeleteExperiment(DeleteExperimentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/apis/v2beta1/experiments/{id}"
     };
   }
 }
@@ -134,6 +135,7 @@ message ListExperimentsRequest {
   // [filter.proto](https://github.com/kubeflow/pipelines/blob/master/backend/api/filter.proto)).
   string filter = 4;
 
+  // Which namespace to filter the experiments on.
   string namespace = 5;
 }
 
@@ -166,11 +168,9 @@ message Experiment {
   // Output. The time that the experiment created.
   google.protobuf.Timestamp created_at = 4;
 
-  //TODO v2: Why repeated?
-  // Optional input field. Specify which resource this run belongs to.
-  // For Experiment, the only valid resource reference is a single Namespace.
-//  repeated ResourceReference resource_references = 5;
-  string namespace =5;
+  // Optional input field. Specify which namespace this experiment 
+  // belongs to
+  string namespace = 5;
 
   enum StorageState {
     STORAGESTATE_UNSPECIFIED = 0;
