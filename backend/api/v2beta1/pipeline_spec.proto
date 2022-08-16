@@ -17,7 +17,6 @@ syntax = "proto3";
 option go_package = "github.com/kubeflow/pipelines/backend/api/v2beta1/go_client";
 package v2beta1;
 
-import "backend/api/v2beta1/parameter.proto";
 import "google/protobuf/struct.proto";
 
 message PipelineSpec {
@@ -35,11 +34,6 @@ message PipelineSpec {
   // Optional input field. The raw pipeline JSON spec.
   string pipeline_manifest = 3;
 
-  // The parameter user provide to inject to the pipeline JSON.
-  // If a default value of a parameter exist in the JSON,
-  // the value user provided here will replace. V1 only
-  repeated Parameter parameters = 4;
-
   // The runtime config of a PipelineSpec.
   message RuntimeConfig {
     // The runtime parameters of the PipelineSpec. The parameters will be
@@ -55,5 +49,5 @@ message PipelineSpec {
   }
 
   // Runtime config of the pipeline. V2 only
-  RuntimeConfig runtime_config = 6;
+  RuntimeConfig runtime_config = 4;
 }
