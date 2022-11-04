@@ -24,6 +24,7 @@ import "google/protobuf/timestamp.proto";
 import "backend/api/v2beta1/pipeline_spec.proto";
 import "backend/api/v2beta1/resource_reference.proto";
 import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/struct.proto";
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
   responses: {
@@ -61,68 +62,46 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
 
 
 service RunService {
-  // Creates a new run in an experiment by experiment ID.
-  rpc CreateRunInExperiment(CreateRunRequestByExperimentID) returns (RunDetail) {
+  // Creates a new run in the experiment specified by the experiment ID. If experiment ID is not specified, the run is created in the default experiment.
+  rpc CreateRun(CreateRunRequest) returns (Run) {
     option (google.api.http) = {
-      post: "/apis/v2beta1/experiments/{experiment_id}/runs"
-      body: "run"
-    };
-  }
-
-  // Creates a new run in an experiment by experiment name.
-  rpc CreateRunInExperimentByName(CreateRunRequestByExperimentName) returns (RunDetail) {
-    option (google.api.http) = {
-      post: "/apis/v2beta1/experiments/names/{experiment_name}/runs"
+      post: "/apis/v2beta1/runs"
       body: "run"
     };
   }
 
   // Finds a specific run by ID.
-  rpc GetRun(GetRunRequest) returns (RunDetail) {
+  rpc GetRun(GetRunRequest) returns (Run) {
     option (google.api.http) = {
-      get: "/apis/v2beta1/runs/{id}"
+      get: "/apis/v2beta1/runs/{run_id}"
     };
   }
 
-  // Finds all runs across all experiments.
+  // Find all runs in an experiment given experiment id. Finds all runs across all experiments if experiment id is not specified.
   rpc ListRuns(ListRunsRequest) returns (ListRunsResponse) {
     option (google.api.http) = {
       get: "/apis/v2beta1/runs"
     };
   }
 
-  // Finds all runs of a specific experiment by experiment ID.
-  rpc ListRunsByExperiment(ListRunsRequestByExperimentID) returns (ListRunsResponse) {
-    option (google.api.http) = {
-      get: "/apis/v2beta1/experiments/{experiment_id}/runs"
-    };
-  }
-
-  // Finds all runs of a specific experiment by experiment name.
-  rpc ListRunsByExperimentName(ListRunsRequestByExperimentName) returns (ListRunsResponse) {
-    option (google.api.http) = {
-      get: "/apis/v2beta1/experiments/names/{experiment_name}/runs"
-    };
-  }
-
   // Archives a run.
   rpc ArchiveRun(ArchiveRunRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/apis/v2beta1/runs/{id}:archive"
+      post: "/apis/v2beta1/runs/{run_id}:archive"
     };
   }
 
   // Restores an archived run.
   rpc UnarchiveRun(UnarchiveRunRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/apis/v2beta1/runs/{id}:unarchive"
+      post: "/apis/v2beta1/runs/{run_id}:unarchive"
     };
   }
 
   // Deletes a run.
   rpc DeleteRun(DeleteRunRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/apis/v2beta1/runs/{id}"
+      delete: "/apis/v2beta1/runs/{run_id}"
     };
   }
 
@@ -133,7 +112,7 @@ service RunService {
   rpc ReportRunMetrics(ReportRunMetricsRequest)
       returns (ReportRunMetricsResponse) {
     option (google.api.http) = {
-      post: "/apis/v2beta1/runs/{id}:reportMetrics"
+      post: "/apis/v2beta1/runs/{run_id}:reportMetrics"
       body: "*"
     };
   }
@@ -148,53 +127,24 @@ service RunService {
   // Terminates an active run.
   rpc TerminateRun(TerminateRunRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/apis/v2beta1/runs/{id}/terminate"
+      post: "/apis/v2beta1/runs/{run_id}:terminate"
     };
   }
 
-  // Re-initiates a failed or terminated run.
-  rpc RetryRun(RetryRunRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      post: "/apis/v2beta1/runs/{id}/retry"
-    };
-  }
 }
 
-message CreateRunRequestByExperimentID {
-  // The ID of the experiment to be retrieved.
-  string experiment_id = 1;
-
-  Run run = 2;
-}
-
-message CreateRunRequestByExperimentName {
-  // The name of the experiment to be retrieved.
-  string experiment_name = 1;
-
-  Run run = 2;
+message CreateRunRequest {
+  Run run = 1;
 }
 
 message GetRunRequest {
   // The ID of the run to be retrieved.
-  string id = 1;
+  string run_id = 1;
 }
 
-message ListRunsRequestByExperimentID {
-  // The ID of the experiment to be retrieved.
-  string experiment_id = 1;
-
-  ListRunsRequest request = 2;
-}
-
-message ListRunsRequestByExperimentName {
-  // The name of the experiment to be retrieved.
-  string experiment_name = 1;
-
-  ListRunsRequest request = 2;
-}
 
 message ListRunsRequest {
-  // A page token to request the next page of results. The token is acquried
+  // A page token to request the next page of results. The token is acquired
   // from the nextPageToken field of the response from the previous
   // ListRuns call or can be omitted when fetching the first page.
   string page_token = 1;
@@ -214,16 +164,14 @@ message ListRunsRequest {
   // A url-encoded, JSON-serialized Filter protocol buffer (see
   // [filter.proto](https://github.com/kubeflow/pipelines/blob/master/backend/api/filter.proto)).
   string filter = 5;
+
+  // The ID of the experiment to be retrieved. If empty, list runs across all experiments.
+  string experiment_id = 6;
 }
 
 message TerminateRunRequest {
   // The ID of the run to be terminated.
-  string id = 1;
-}
-
-message RetryRunRequest {
-  // The ID of the run to be retried.
-  string id = 1;
+  string run_id = 1;
 }
 
 message ListRunsResponse {
@@ -238,86 +186,89 @@ message ListRunsResponse {
 
 message ArchiveRunRequest {
   // The ID of the run to be archived.
-  string id = 1;
+  string run_id = 1;
 }
 
 message UnarchiveRunRequest {
   // The ID of the run to be restored.
-  string id = 1;
+  string run_id = 1;
 }
 
 message DeleteRunRequest {
   // The ID of the run to be deleted.
-  string id = 1;
+  string run_id = 1;
 }
 
 message Run {
   // Output. Unique run ID. Generated by API server.
-  string id = 1;
+  string run_id = 1;
 
   // Required input field. Name provided by user,
-  // or auto generated if run is created by scheduled job. Not unique.
-  string name = 2;
+  // or auto generated if it is created by a recurring run. Not unique.
+  string display_name = 2;
 
-  // Optional input field. Describing the purpose of the run
-  string description = 3;
+  enum StorageState {
+    STORAGESTATE_UNSPECIFIED = 0;
+    STORAGESTATE_AVAILABLE = 1;
+    STORAGESTATE_ARCHIVED = 2;
+  }
 
-  // Required input field.
-  // Describing what the pipeline manifest and parameters to use for the run.
-  PipelineSpec pipeline_spec = 4;
+  // Output. Specifies whether this run is in archived or available mode.
+  StorageState storage_state = 3;
 
-  // Optional input field. Specify which Kubernetes service account this run uses.
-  string service_account = 5;
+  // Optional input field. Describes the purpose of the run.
+  string description = 4;
 
-  // Optional input field. The Namespace the run belongs to. 
-  string namespace = 6;
+  // Required input field. Specifies the source of the pipeline spec for this 
+  // run. Can be either a pipeline id, or a pipeline spec.
+  oneof pipeline_source {
+    // The ID of the pipeline user uploaded before.
+    string pipeline_id = 5;
+    // The pipeline spec.
+    google.protobuf.Struct pipeline_spec = 6;
+  }
 
-  // Optional input field. The pipeline version the run belongs to. 
-  string pipeline_version = 7;
+  // Runtime config of the pipeline. 
+  RuntimeConfig runtime_config = 7;
 
-  // Output. The time that the run created.
-  google.protobuf.Timestamp created_at = 8;
+  // Optional input field. Specifies which Kubernetes service account this run uses.
+  string service_account = 8;
+
+  // Output. The time the run was created.
+  google.protobuf.Timestamp created_at = 9;
 
   // Output. When this run is scheduled to run. This could be different from
   // created_at. For example, if a run is from a backfilling job that was
   // supposed to run 2 month ago, the scheduled_at is 2 month ago,
   // v.s. created_at is the current time.
-  google.protobuf.Timestamp scheduled_at = 9;
+  google.protobuf.Timestamp scheduled_at = 10;
 
   // Output. The time this run is finished.
-  google.protobuf.Timestamp finished_at = 10;
+  google.protobuf.Timestamp finished_at = 11;
 
   // Output. The status of the run.
-  // One of [Pending, Running, Succeeded, Skipped, Failed, Error]
-  string status = 11;
+  enum Status {
+    UNSPECIFIED = 0;
+    PENDING = 1;
+    RUNNING = 2;
+    SUCCEEDED = 3;
+    SKIPPED = 4;
+    FAILED = 5;
+    ERROR = 6;
+  }
+
+  Status status = 12;
 
   // In case any error happens retrieving a run field, only run ID
   // and the error message is returned. Client has the flexibility of choosing
   // how to handle error. This is especially useful during listing call.
-  string error = 12;
+  string error = 13;
 
-  // Output. The metrics of the run. The metrics are reported by ReportMetrics
-  // API.
-  repeated RunMetric metrics = 13;
+  // Namespace this run belongs to.
+  string namespace = 14;
 
-  enum StorageState {
-    STORAGESTATE_AVAILABLE = 0;
-    STORAGESTATE_ARCHIVED = 1;
-  }
-
-  // Output. Specify whether this run is in archived or available mode.
-  StorageState storage_state = 14;
-}
-
-message PipelineRuntime {
-  // Output. The runtime JSON manifest of the pipeline, including the status
-  // of pipeline steps and fields need for UI visualization etc.
-  string pipeline_manifest = 1;
-}
-
-message RunDetail {
-  Run run = 1;
-  PipelineRuntime pipeline_runtime = 2;
+  // ID of the experiment this run belongs to.
+  string experiment_ID = 15;
 }
 
 message RunMetric {
@@ -351,7 +302,7 @@ message RunMetric {
 
 message ReportRunMetricsRequest {
   // Required. The parent run ID of the metric.
-  string id = 1;
+  string run_id = 1;
 
   // List of metrics to report.
   repeated RunMetric metrics = 2;
